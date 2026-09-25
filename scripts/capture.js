@@ -29,6 +29,9 @@ const STATES = [
   ['coffee', "document.querySelector('#stage').classList.remove('idle');document.querySelector('#stage').classList.add('coffee')"],
   ['dancing', "document.querySelector('#stage').classList.remove('idle');document.querySelector('#stage').classList.add('dancing')"],
   ['rainbow', "document.querySelector('#stage').classList.add('happy');var rb=document.querySelector('#rainbow');rb.style.opacity=1;rb.style.transform='translateX(-50%) scale(1)'"],
+  ['out-party', "document.querySelector('#stage').classList.add('outfit-party')"],
+  ['out-headphones', "document.querySelector('#stage').classList.add('outfit-headphones')"],
+  ['out-flower', "document.querySelector('#stage').classList.add('outfit-flower')"],
 ];
 
 async function run() {

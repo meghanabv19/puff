@@ -10,7 +10,7 @@ import { initTimer, toggle as toggleTimer, isRunning, refreshStats } from './tim
 import { initTasks, focusInput, render as renderTasks } from './tasks.js';
 import { initReminders } from './reminders.js';
 import { initSettings, openSettingsFallback } from './settings.js';
-import { initChat } from './chat.js';
+import { initChat, doPeekaboo } from './chat.js';
 
 const body = document.body;
 
@@ -31,6 +31,9 @@ function handleCommand({ name, payload }) {
       break;
     case 'toggle-focus':
       toggleTimer();
+      break;
+    case 'peekaboo':
+      doPeekaboo();
       break;
     case 'pause-reminders': {
       const mins = payload?.minutes || 60;

@@ -79,6 +79,14 @@
 .focus .glasses, .focus .laptop { display: inline; }
 .coffee .acc-coffee { display: inline; }
 
+/* cosmetic outfits — hidden unless the matching outfit class is set */
+.outfit { display: none; }
+.outfit-party   .outfit-party,
+.outfit-beanie  .outfit-beanie,
+.outfit-headphones .outfit-headphones,
+.outfit-flower  .outfit-flower,
+.outfit-bow     .outfit-bow { display: inline; }
+
 /* streak accessories / glow — highest earned tier is shown */
 .acc, .aura { display: none; }
 .streak-3 .acc-star  { display: inline; }
@@ -162,6 +170,12 @@
   50% { transform: rotate(9deg)  translateY(-3px) scale(.96,1.04); }
   80% { transform: rotate(-6deg) translateY(-1px); }
 }
+
+/* travel-roll: Puff spins continuously while the window rolls across the screen.
+   Direction sets which way it spins. */
+.rolling #puff { animation: spinRoll .55s linear infinite; }
+.rolling.roll-left #puff { animation-direction: reverse; }
+@keyframes spinRoll { to { transform: rotate(360deg); } }
 
 /* ---------------- rainbow celebration ---------------- */
 #rainbow {

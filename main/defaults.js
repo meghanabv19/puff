@@ -47,7 +47,9 @@ function defaultSettings() {
     hotkeys: {
       togglePanel: 'CommandOrControl+Shift+P',
       toggleFocus: 'CommandOrControl+Shift+F',
+      peekaboo: 'CommandOrControl+Shift+K',
     },
+    outfit: 'none',   // none | party | headphones | flower | bow | beanie
     messageGapMinutes: 10,                      // min gap between unsolicited bubbles
     quietDND: true,                            // go quiet on fullscreen apps
     name: 'Meghana',                           // Puff occasionally uses this; editable in settings

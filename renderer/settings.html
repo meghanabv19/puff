@@ -17,6 +17,15 @@
       <input type="text" id="s-name" maxlength="24" placeholder="your name"></label>
     <label class="row"><span>Pet size</span>
       <select id="s-size"><option value="S">Small</option><option value="M">Medium</option><option value="L">Large</option></select></label>
+    <label class="row"><span>Outfit</span>
+      <select id="s-outfit">
+        <option value="none">None</option>
+        <option value="party">Party hat 🎉</option>
+        <option value="beanie">Beanie 🧢</option>
+        <option value="headphones">Headphones 🎧</option>
+        <option value="flower">Flower 🌸</option>
+        <option value="bow">Bow 🎀</option>
+      </select></label>
     <label class="row"><span>How chatty (min gap between unprompted lines, min)</span>
       <input type="number" id="m-gap" min="0" max="120" step="1"></label>
     <label class="row check"><input type="checkbox" id="w-on"><span>Let Puff wander when idle</span></label>
@@ -81,6 +90,8 @@
       <input type="text" id="hk-panel" class="hk" readonly placeholder="click, then press"></label>
     <label class="row"><span>Start / pause focus</span>
       <input type="text" id="hk-focus" class="hk" readonly placeholder="click, then press"></label>
+    <label class="row"><span>Peekaboo!</span>
+      <input type="text" id="hk-peek" class="hk" readonly placeholder="click, then press"></label>
   </section>
 </main>
 <script type="module" src="js/settings-window.js"></script>

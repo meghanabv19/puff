@@ -38,6 +38,7 @@ function save() {
 function collect() {
   settings.name = $('s-name').value.trim();
   settings.petSize = $('s-size').value;
+  settings.outfit = $('s-outfit').value;
   settings.messageGapMinutes = num($('m-gap'), 10);
   settings.wander = $('w-on').checked;
   settings.wanderIdleSeconds = num($('w-idle'), 45);
@@ -78,6 +79,7 @@ function fill() {
   const s = settings;
   $('s-name').value = s.name || '';
   $('s-size').value = s.petSize || 'M';
+  $('s-outfit').value = s.outfit || 'none';
   $('m-gap').value = s.messageGapMinutes ?? 10;
   $('w-on').checked = s.wander !== false;
   $('w-idle').value = s.wanderIdleSeconds ?? 45;
@@ -108,6 +110,7 @@ function fill() {
 
   $('hk-panel').value = accelToText(s.hotkeys?.togglePanel);
   $('hk-focus').value = accelToText(s.hotkeys?.toggleFocus);
+  $('hk-peek').value = accelToText(s.hotkeys?.peekaboo);
 }
 
 function bindHotkey(inputId, key) {
@@ -148,6 +151,7 @@ async function boot() {
 
   bindHotkey('hk-panel', 'togglePanel');
   bindHotkey('hk-focus', 'toggleFocus');
+  bindHotkey('hk-peek', 'peekaboo');
 }
 
 boot();

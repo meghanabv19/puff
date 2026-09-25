@@ -166,12 +166,41 @@ function maybePlay() {
   } else if (r < 0.52) {
     activity('coffee', 5000);
     floaters(3, ['˚', '·', '~'], '#C9A27A');
-  } else if (r < 0.68) {
-    react('roll');   // playful barrel roll
-  } else if (r < 0.8) {
+  } else if (r < 0.6) {
+    travelRoll();    // roll across the screen a little way
+  } else if (r < 0.74) {
+    react('roll');   // in-place barrel roll
+  } else if (r < 0.84) {
     react('wink');
   }
   // otherwise: do nothing this tick — wandering handles walking on its own
+}
+
+// Puff tucks in and rolls a good distance across the work area, spinning as it
+// goes, then pops back up. The window travel is done in main; the spin is CSS.
+async function travelRoll() {
+  const info = await api.bounds();
+  if (!info || getBase() !== 'idle') return;
+  const { bounds, workArea } = info;
+
+  const dir = Math.random() < 0.5 ? -1 : 1;
+  const dist = 160 + Math.random() * 200;
+  const minX = workArea.x;
+  const maxX = workArea.x + workArea.width - bounds.width;
+  const targetX = Math.min(maxX, Math.max(minX, bounds.x + dir * dist));
+  const dx = targetX - bounds.x;
+  if (Math.abs(dx) < 40) return;
+
+  const ms = Math.min(1600, 500 + Math.abs(dx) * 4);
+  els.stage.classList.add('rolling');
+  els.stage.classList.toggle('roll-left', dx < 0);
+  setBase('wander'); // suppress other activities while rolling
+  api.walk(dx, ms);
+  setTimeout(() => {
+    els.stage.classList.remove('rolling', 'roll-left');
+    if (getBase() === 'wander') setBase('idle');
+    play('plop');
+  }, ms + 60);
 }
 
 /* ---------------- wandering ---------------- */

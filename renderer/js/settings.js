@@ -7,10 +7,19 @@ import { api, S } from './runtime.js';
 import { say } from './bubble.js';
 
 const SIZE_SCALE = { S: 0.8, M: 1, L: 1.2 };
+const OUTFITS = ['party', 'beanie', 'headphones', 'flower', 'bow'];
 
 export function applySettings() {
   const size = (S.settings && S.settings.petSize) || 'M';
   document.documentElement.style.setProperty('--scale', String(SIZE_SCALE[size] || 1));
+
+  // cosmetic outfit
+  const stage = document.getElementById('stage');
+  if (stage) {
+    OUTFITS.forEach((o) => stage.classList.remove('outfit-' + o));
+    const outfit = (S.settings && S.settings.outfit) || 'none';
+    if (OUTFITS.includes(outfit)) stage.classList.add('outfit-' + outfit);
+  }
 }
 
 export function initSettings() {

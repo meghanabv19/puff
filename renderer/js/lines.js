@@ -47,8 +47,8 @@ export const LINES = {
   watchBrowser: ['whatcha reading? 👀', 'ooh, interesting~', 'i see you browsing hehe'],
   watchTerminal: ['hacker mode 😎', 'type type type~', 'the terminal wizard ✨'],
 
-  water: ['sip of water? 💧', 'hydration check!', 'drink some water with me'],
-  stretch: ['little stretch? 🙆', 'roll those shoulders~', 'stand up and wiggle with me'],
+  water: ['sip of water{name}? 💧', 'hydration check!', 'drink some water with me ♡', 'water break~ your body will thank you'],
+  stretch: ['stand up and stretch{name}? 🙆', 'roll those shoulders~', 'a little walk would feel nice ♡', 'up up! wiggle with me', 'time to stretch those legs 🚶'],
   eyes: ['look far away for a sec 👀', '20-20-20, rest your eyes', 'peek out the window?'],
   lateNight: ["it's getting late... sleep soon?", 'past bedtime~ wind down?', "i'll still be here tomorrow ♡"],
 

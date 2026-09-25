@@ -14,6 +14,14 @@ function isCallingName(text) {
   return t === name || t === 'hey ' + name || t === 'hi ' + name || t === name + ' ' + name;
 }
 
+// The peekaboo sequence: duck off the edge (main moves the window), then pop
+// back with a surprise. Shared by the chat box and the global hotkey.
+export function doPeekaboo() {
+  api.peekaboo();
+  react('surprised');
+  setTimeout(() => { react('giggle'); say(pick(LINES.peekaboo), { ms: 2600, replace: true }); }, 1150);
+}
+
 let inputEl;
 const history = []; // recent {role, content} turns for context
 
@@ -47,12 +55,7 @@ export function initChat() {
     inputEl.value = '';
 
     // calling Puff by name -> peekaboo!
-    if (isCallingName(text)) {
-      api.peekaboo();
-      react('surprised');
-      setTimeout(() => { react('giggle'); say(pick(LINES.peekaboo), { ms: 2600, replace: true }); }, 1150);
-      return;
-    }
+    if (isCallingName(text)) { doPeekaboo(); return; }
 
     history.push({ role: 'user', content: text });
     say('…', { ms: 12000, replace: true });

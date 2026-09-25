@@ -261,6 +261,7 @@ function registerHotkeys() {
   const bindings = [
     [hk.togglePanel, 'toggle-panel'],
     [hk.toggleFocus, 'toggle-focus'],
+    [hk.peekaboo, 'peekaboo'],
   ];
   for (const [accel, cmd] of bindings) {
     if (!accel) continue;
