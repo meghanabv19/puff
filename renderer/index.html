@@ -26,6 +26,7 @@
   </div>
   <ul id="tasks"></ul>
   <input id="newTask" placeholder="Add a task and press Enter" maxlength="60">
+  <input id="chatInput" placeholder="talk to puff…" maxlength="200" autocomplete="off">
   <div class="foot">
     <span id="stats">No sessions yet today</span>
     <button id="quitBtn">Quit Puff</button>
@@ -112,6 +113,13 @@
         <circle cx="120" cy="110" r="7.5" fill="#2B2540"/>
         <circle cx="122.5" cy="107" r="2.4" fill="#fff"/>
       </g>
+      <!-- eyes: angry (brows down + hard stare) -->
+      <g class="eyes-angry">
+        <path d="M70 100 l19 7" stroke="#2B2540" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <path d="M130 100 l-19 7" stroke="#2B2540" stroke-width="3.2" fill="none" stroke-linecap="round"/>
+        <circle cx="80" cy="113" r="6.5" fill="#2B2540"/>
+        <circle cx="120" cy="113" r="6.5" fill="#2B2540"/>
+      </g>
       <!-- eyes: sad (droopy + brows + a tear) -->
       <g class="eyes-sad">
         <path d="M72 100 q8 -3 15 1" stroke="#2B2540" stroke-width="2.4" fill="none" stroke-linecap="round"/>
@@ -135,12 +143,20 @@
       <path class="mouth" d="M95 124 q5 5 10 0" stroke="#2B2540" stroke-width="2.6" fill="none" stroke-linecap="round"/>
       <ellipse class="mouth-o" cx="100" cy="126" rx="4" ry="5" fill="#2B2540"/>
       <path class="mouth-sad" d="M93 128 q7 -7 14 0" stroke="#2B2540" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <path class="mouth-angry" d="M92 130 q8 -8 16 0" stroke="#2B2540" stroke-width="3" fill="none" stroke-linecap="round"/>
 
       <!-- tiny laptop Puff types on during focus (lid faces us, mint logo) -->
       <g class="laptop">
         <path d="M72 152 v-19 a3 3 0 0 1 3 -3 h50 a3 3 0 0 1 3 3 v19 z" fill="#2C2850"/>
         <rect x="64" y="151" width="72" height="8" rx="3" fill="#B7ACE8"/>
         <circle cx="100" cy="141" r="3.2" fill="#9FF2D0"/>
+      </g>
+
+      <!-- little coffee mug, held during a coffee break -->
+      <g class="acc-coffee">
+        <rect x="86" y="130" width="24" height="17" rx="3" fill="#FFF6EC" stroke="#C9A27A" stroke-width="1.4"/>
+        <rect x="86" y="130" width="24" height="5" rx="2" fill="#B98A5E"/>
+        <path d="M110 134 q9 0 9 7 q0 7 -9 7" fill="none" stroke="#C9A27A" stroke-width="3"/>
       </g>
 
       <!-- streak accessories: shown one at a time by .streak-N (see pet.css) -->

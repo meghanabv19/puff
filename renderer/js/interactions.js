@@ -7,6 +7,7 @@ import { LINES } from './lines.js';
 import { say } from './bubble.js';
 import { els, play, react, beHappy, setBase, getBase, face } from './pet.js';
 import { wake } from './reminders.js';
+import { isBreakRunning } from './timer.js';
 
 let onPanelToggle = () => {};
 export function setPanelToggle(fn) { onPanelToggle = fn; }
@@ -140,12 +141,14 @@ function startWander() {
 }
 
 function canWander() {
+  // Puff roams much sooner during a break; otherwise waits for real quiet time.
+  const idleNeeded = (isBreakRunning() ? 12 : (S.settings.wanderIdleSeconds || 45)) * 1000;
   return S.settings.wander &&
     !isQuiet() &&
     getBase() === 'idle' &&
     !cursorNear &&
     !document.body.classList.contains('panel-open') &&
-    (Date.now() - lastInteraction) >= (S.settings.wanderIdleSeconds || 45) * 1000;
+    (Date.now() - lastInteraction) >= idleNeeded;
 }
 
 async function maybeWander() {

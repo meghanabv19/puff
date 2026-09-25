@@ -36,6 +36,9 @@ contextBridge.exposeInMainWorld('puff', {
     patch: (key, partial) => ipcRenderer.send('store:patch', { key, partial }),
   },
 
+  // talk to Puff
+  chat: (messages) => ipcRenderer.invoke('chat:send', { messages }),
+
   // features that live in main
   openSettings: () => ipcRenderer.send('settings:open'),
   pauseReminders: (minutes) => ipcRenderer.send('reminders:pause', minutes),

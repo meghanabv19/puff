@@ -55,6 +55,27 @@
   </section>
 
   <section>
+    <h2>Talk to Puff <small>optional</small></h2>
+    <label class="row check"><input type="checkbox" id="chat-on"><span>Enable smart chat</span></label>
+    <p class="hint">Uses an <b>Anthropic API key</b> (from console.anthropic.com) — pay-as-you-go, <i>not</i> a Claude subscription. Without a key, Puff still replies with cute canned lines. The key is stored locally in your data file.</p>
+    <label class="row"><span>API key</span>
+      <input type="password" id="chat-key" placeholder="sk-ant-…" autocomplete="off"></label>
+    <label class="row"><span>Model</span>
+      <select id="chat-model">
+        <option value="claude-haiku-4-5">Haiku 4.5 — fastest &amp; cheapest</option>
+        <option value="claude-sonnet-5">Sonnet 5 — balanced</option>
+        <option value="claude-opus-4-8">Opus 4.8 — smartest</option>
+      </select></label>
+  </section>
+
+  <section>
+    <h2>Fun</h2>
+    <label class="row check"><input type="checkbox" id="social-on"><span>Get angry when I open social media 😤</span></label>
+    <label class="row check"><input type="checkbox" id="sound-on"><span>Celebration sounds 🎵</span></label>
+    <label class="row check"><input type="checkbox" id="apreact-on"><span>React to what app I'm in 👀</span></label>
+  </section>
+
+  <section>
     <h2>Hotkeys <small>click a field, then press keys</small></h2>
     <label class="row"><span>Toggle panel</span>
       <input type="text" id="hk-panel" class="hk" readonly placeholder="click, then press"></label>

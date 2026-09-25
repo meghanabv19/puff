@@ -26,8 +26,9 @@
   animation: breathe 3.2s ease-in-out infinite;
 }
 @keyframes breathe { 50% { transform: scale(1.025, .97); } }
-.sleeping .breathe { animation-duration: 5.5s; }
+.sleeping .breathe, .napping .breathe { animation-duration: 5.5s; }
 .sleepy  .breathe { animation-duration: 4.4s; }
+.meditating .breathe { animation-duration: 6s; }
 
 /* lamp glow — mint during focus, dim while asleep */
 .lamp { animation: glow 2.6s ease-in-out infinite; transition: fill .6s; }
@@ -35,20 +36,25 @@
 .focus .lamp { fill: var(--focus); animation-duration: 1.4s; }
 .sleeping .lamp { opacity: .35; animation: none; }
 
-/* cheeks blush on hover / happy / love */
+/* cheeks blush on hover / happy / love / angry / coffee / dance */
 .cheeks { opacity: .5; transition: opacity .3s; }
-.hovered .cheeks, .happy .cheeks, .r-love .cheeks, .r-pouty .cheeks { opacity: 1; }
+.hovered .cheeks, .happy .cheeks, .r-love .cheeks, .r-pouty .cheeks,
+.angry .cheeks, .coffee .cheeks, .dancing .cheeks { opacity: 1; }
 
 /* ===================== expression switching ===================== */
 /* everything off by default; the rules below turn exactly one set back on */
-.eyes-shut, .eyes-happy, .eyes-love, .eyes-wide, .eyes-wink, .eyes-sad,
-.mouth-o, .mouth-sad, .glasses, .laptop { display: none; }
+.eyes-shut, .eyes-happy, .eyes-love, .eyes-wide, .eyes-wink, .eyes-sad, .eyes-angry,
+.mouth-o, .mouth-sad, .mouth-angry, .glasses, .laptop, .acc-coffee { display: none; }
 
 /* eyes */
-.blink .eyes-open, .sleeping .eyes-open, .sleepy .eyes-open { display: none; }
-.blink .eyes-shut, .sleeping .eyes-shut, .sleepy .eyes-shut { display: inline; }
-.happy .eyes-open, .r-giggle .eyes-open, .r-celebrate .eyes-open { display: none; }
-.happy .eyes-happy, .r-giggle .eyes-happy, .r-celebrate .eyes-happy { display: inline; }
+.blink .eyes-open, .sleeping .eyes-open, .sleepy .eyes-open,
+.napping .eyes-open, .meditating .eyes-open { display: none; }
+.blink .eyes-shut, .sleeping .eyes-shut, .sleepy .eyes-shut,
+.napping .eyes-shut, .meditating .eyes-shut { display: inline; }
+.happy .eyes-open, .r-giggle .eyes-open, .r-celebrate .eyes-open,
+.dancing .eyes-open, .coffee .eyes-open { display: none; }
+.happy .eyes-happy, .r-giggle .eyes-happy, .r-celebrate .eyes-happy,
+.dancing .eyes-happy, .coffee .eyes-happy { display: inline; }
 .r-love .eyes-open  { display: none; }
 .r-love .eyes-love  { display: inline; }
 .r-surprised .eyes-open { display: none; }
@@ -57,6 +63,8 @@
 .r-wink .eyes-wink  { display: inline; }
 .r-pouty .eyes-open { display: none; }
 .r-pouty .eyes-sad  { display: inline; }
+.angry .eyes-open   { display: none; }
+.angry .eyes-angry  { display: inline; }
 .sleepy .eyes-shut  { opacity: .8; }
 
 /* mouths */
@@ -64,9 +72,12 @@
 .dragging .mouth-o, .r-surprised .mouth-o { display: inline; }
 .r-pouty .mouth { display: none; }
 .r-pouty .mouth-sad { display: inline; }
+.angry .mouth { display: none; }
+.angry .mouth-angry { display: inline; }
 
-/* focus "working": glasses + laptop appear */
+/* focus "working": glasses + laptop appear; coffee break: a mug */
 .focus .glasses, .focus .laptop { display: inline; }
+.coffee .acc-coffee { display: inline; }
 
 /* streak accessories / glow — highest earned tier is shown */
 .acc, .aura { display: none; }
@@ -97,6 +108,25 @@
 @keyframes waddle {
   0%,100% { transform: translateY(0) rotate(-4deg); }
   50%     { transform: translateY(-3px) rotate(4deg); }
+}
+
+/* break-time activities — Puff's little moves */
+.dancing #puff { animation: dance .55s ease-in-out infinite; }
+@keyframes dance {
+  0%,100% { transform: translateY(0) rotate(-6deg); }
+  25%     { transform: translateY(-8px) rotate(6deg) scale(1.03,.97); }
+  50%     { transform: translateY(0) rotate(-6deg); }
+  75%     { transform: translateY(-8px) rotate(6deg) scale(1.03,.97); }
+}
+.coffee #puff { animation: sip 2.4s ease-in-out infinite; }
+@keyframes sip { 0%,100% { transform: rotate(0); } 45% { transform: rotate(-6deg) translateY(-1px); } }
+.meditating #puff { animation: levitate 4s ease-in-out infinite; }
+@keyframes levitate { 50% { transform: translateY(-7px); } }
+.angry #puff { animation: madShake .16s ease-in-out infinite; }
+@keyframes madShake {
+  0%,100% { transform: translateX(0) rotate(0); }
+  25%     { transform: translateX(-3px) rotate(-2deg); }
+  75%     { transform: translateX(3px) rotate(2deg); }
 }
 /* face the way we're walking */
 .facing { transform-box: fill-box; transform-origin: 50% 50%; transition: transform .12s; }

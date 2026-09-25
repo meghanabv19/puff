@@ -51,9 +51,22 @@ Open from the tray or right-click menu. Set what Puff calls you, its size,
 timer lengths, reminders, wandering, do-not-disturb, launch-at-login, hotkeys,
 and how chatty it is. Everything applies instantly.
 
-## Does Puff talk back?
-Right now Puff says short pre-written lines (and sometimes your name) — it
-doesn't yet read what *you* type. A little "chat with Puff" box is easy to add if
-you'd like one.
+## Talk to Puff
+Open the panel and type in the **"talk to puff…"** box. Without any setup Puff
+replies with cute canned lines. For real conversation, add an **Anthropic API
+key** in Settings (from console.anthropic.com — pay-as-you-go, *not* a Claude
+subscription; Haiku is the cheapest model).
+
+## Break time = playtime
+Start a break and Puff gets playful — it wanders around and, depending on how
+long your break is, will **dance**, **take a coffee**, **meditate**, or **nap**,
+and sometimes asks if it can do something for you. Tick a task and you'll hear a
+little **celebration chime** 🎵 (toggle in Settings).
+
+## Keeping you honest
+Open a social-media site and Puff pops onto your screen with an **angry face**
+😤 (toggleable). It also floats above *everything* — Chrome, VS Code, your
+terminal, even full-screen apps — and gives a little wave at what you're working
+on. It never disappears on its own; hide it from the tray if you need quiet.
 
 *Tip: run with `PUFF_DEBUG=1 npm start` to see logs while tinkering.*

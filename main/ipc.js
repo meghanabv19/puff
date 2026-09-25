@@ -6,6 +6,7 @@
 
 const { ipcMain, app } = require('electron');
 const store = require('./store');
+const chat = require('./chat');
 
 function register(deps) {
   const { getWin, moveBy, setIgnore, showHide, savePosition,
@@ -39,6 +40,9 @@ function register(deps) {
     store.patch(key, partial);
     notifyChange(key);
   });
+
+  // --- talk to Puff (Claude API; key stays in main) ---
+  ipcMain.handle('chat:send', (_e, { messages }) => chat.ask(messages));
 
   // --- app / features ---
   ipcMain.on('app:quit', () => app.quit());

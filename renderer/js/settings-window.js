@@ -58,6 +58,15 @@ function collect() {
     thresholdSeconds: num($('d-thr'), 20),
     list: $('d-list').value.split(/[,\n]/).map((s) => s.trim()).filter(Boolean),
   };
+  settings.chat = {
+    on: $('chat-on').checked,
+    apiKey: $('chat-key').value.trim(),
+    model: $('chat-model').value,
+  };
+  // keep socialAnger's list/cooldown; only the toggle is editable here
+  settings.socialAnger = Object.assign({}, settings.socialAnger, { on: $('social-on').checked });
+  settings.sound = { on: $('sound-on').checked };
+  settings.appReactions = $('apreact-on').checked;
   // hotkeys are set directly by the capture handlers; keep whatever's there
   settings.hotkeys = settings.hotkeys || {};
 }
@@ -88,6 +97,14 @@ function fill() {
   const d = s.distractions || {};
   $('d-on').checked = !!d.on; $('d-thr').value = d.thresholdSeconds ?? 20;
   $('d-list').value = (d.list || []).join(', ');
+
+  const c = s.chat || {};
+  $('chat-on').checked = !!c.on;
+  $('chat-key').value = c.apiKey || '';
+  $('chat-model').value = c.model || 'claude-opus-4-8';
+  $('social-on').checked = !(s.socialAnger && s.socialAnger.on === false);
+  $('sound-on').checked = !(s.sound && s.sound.on === false);
+  $('apreact-on').checked = s.appReactions !== false;
 
   $('hk-panel').value = accelToText(s.hotkeys?.togglePanel);
   $('hk-focus').value = accelToText(s.hotkeys?.toggleFocus);

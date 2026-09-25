@@ -27,6 +27,21 @@ export const LINES = {
 
   distract: ['back to it{name}? ♡', 'psst… that focus session ✦', 'i believe in you, one more push', 'come back to me~ 🥺'],
 
+  // Puff gets angry when a social site opens
+  angry: ['hey! no social media 😤', 'back to work{name}! >:(', 'i saw that! 👀', 'nuh uh, not now~', 'focus focus focus 😤', 'put that down{name} 😾'],
+
+  // break-time playfulness
+  breakDance: ['🎵 dance with me!', 'wiggle wiggle~', 'break dance party ♡', 'shake it off{name}!'],
+  breakCoffee: ['coffee time ☕', 'lil caffeine break~', 'i made you a coffee ♡', 'sip sip{name}'],
+  breakMeditate: ['breathe in… and out…', 'ommm 🧘', "let's be calm together", 'soften your shoulders~'],
+  breakNap: ['power nap? 😴', 'quick rest with me~', 'zzz… just five minutes', 'recharge time{name}'],
+  breakAsk: ['want a lil dance? 🎵', 'coffee break? ☕', 'shall we stretch together?', 'meditate for a sec? 🧘', 'nap with me{name}? 😴'],
+
+  // "seeing what you're doing" — gentle app-aware asides
+  watchCoding: ['ooh, coding? ✨', 'look at you go, dev {name}', 'i love watching you build ♡', 'clean code, i bet 👀'],
+  watchBrowser: ['whatcha reading? 👀', 'ooh, interesting~', 'i see you browsing hehe'],
+  watchTerminal: ['hacker mode 😎', 'type type type~', 'the terminal wizard ✨'],
+
   water: ['sip of water? 💧', 'hydration check!', 'drink some water with me'],
   stretch: ['little stretch? 🙆', 'roll those shoulders~', 'stand up and wiggle with me'],
   eyes: ['look far away for a sec 👀', '20-20-20, rest your eyes', 'peek out the window?'],

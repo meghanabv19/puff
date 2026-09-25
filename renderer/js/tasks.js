@@ -6,6 +6,7 @@ import { LINES } from './lines.js';
 import { say } from './bubble.js';
 import { react } from './pet.js';
 import { refreshStats } from './timer.js';
+import * as sound from './sound.js';
 
 let listEl, inputEl;
 let onTogglePanel = () => {};
@@ -33,6 +34,7 @@ export function focusInput() { inputEl && inputEl.focus(); }
 
 function celebrate() {
   react('celebrate');
+  sound.celebrate(); // the little "task done!" jingle
   say(pick(LINES.taskDone));
 }
 

@@ -24,6 +24,22 @@ function defaultSettings() {
       thresholdSeconds: 20,
       list: ['youtube', 'reddit', 'instagram', 'netflix', ' x ', 'twitter'],
     },
+    // Puff pops onto the screen with an angry face when a social site is open
+    // (any time, not just during focus). Checks window titles in memory only.
+    socialAnger: {
+      on: true,
+      cooldownMinutes: 3,
+      list: ['youtube', 'instagram', 'reddit', 'twitter', ' x ', 'tiktok', 'facebook', 'netflix', 'snapchat'],
+    },
+    // Talk to Puff — a small Claude API call. The key lives in this file and is
+    // used only in the main process. Leave apiKey empty to keep chat off.
+    chat: {
+      on: false,
+      apiKey: '',
+      model: 'claude-opus-4-8',
+    },
+    sound: { on: true },           // tiny celebration chimes
+    appReactions: true,            // gentle "i see what you're doing" asides
     wander: true,
     wanderIdleSeconds: 45,                      // quiet time before Puff may wander
     petSize: 'M',                              // 'S' | 'M' | 'L'

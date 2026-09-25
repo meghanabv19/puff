@@ -15,6 +15,7 @@ export const api = window.puff || {
     patch(k, p) { const d = JSON.parse(localStorage.getItem('puff') || '{}'); d[k] = Object.assign({}, d[k], p); localStorage.setItem('puff', JSON.stringify(d)); },
   },
   openSettings() {}, pauseReminders() {}, setLaunchAtLogin() {},
+  chat: async () => ({ ok: false, error: 'no-bridge', text: 'chat needs the app running ♡' }),
   onCursor(cb) { document.addEventListener('mousemove', (e) => cb({ x: e.clientX, y: e.clientY, near: true })); return () => {}; },
   onIdle() { return () => {}; },
   onPower() { return () => {}; },
@@ -36,7 +37,7 @@ export const todayStr = () => new Date().toDateString();
 // Do-not-disturb state. Quiet = a full-screen app is in front (when quietDND is
 // on) OR you paused reminders from the tray. While quiet, Puff sends no
 // unsolicited bubbles and doesn't wander.
-export const watch = { fullscreen: false, distraction: false };
+export const watch = { fullscreen: false, distraction: false, social: false, context: 'other' };
 export const dnd = { pausedUntil: 0 };
 export function isQuiet() {
   const fs = watch.fullscreen && (S.settings ? S.settings.quietDND !== false : true);

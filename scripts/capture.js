@@ -25,6 +25,9 @@ const STATES = [
   ['streak7', "document.querySelector('#stage').classList.add('streak-7')"],
   ['streak14', "document.querySelector('#stage').classList.add('streak-14')"],
   ['streak30', "document.querySelector('#stage').classList.add('streak-30')"],
+  ['angry', "document.querySelector('#stage').classList.remove('idle');document.querySelector('#stage').classList.add('angry')"],
+  ['coffee', "document.querySelector('#stage').classList.remove('idle');document.querySelector('#stage').classList.add('coffee')"],
+  ['dancing', "document.querySelector('#stage').classList.remove('idle');document.querySelector('#stage').classList.add('dancing')"],
 ];
 
 async function run() {

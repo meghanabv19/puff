@@ -12,7 +12,8 @@
 import { $, pick } from './runtime.js';
 
 export const els = {};
-export const BASES = ['idle', 'focus', 'sleeping', 'sleepy', 'wander'];
+export const BASES = ['idle', 'focus', 'sleeping', 'sleepy', 'wander',
+  'dancing', 'meditating', 'coffee', 'napping', 'angry'];
 
 let base = 'idle';
 let reducedMotion = false;
@@ -40,6 +41,32 @@ export function getBase() { return base; }
 // face direction while wandering ('left' | 'right')
 export function face(dir) {
   els.stage.classList.toggle('face-left', dir === 'left');
+}
+
+// A temporary base state (dance, coffee, nap, meditate, angry) that reverts to
+// idle after `ms` — unless something else changed the state meanwhile.
+let activityTimer = null;
+export function activity(state, ms, onStart) {
+  setBase(state);
+  if (onStart) onStart();
+  clearTimeout(activityTimer);
+  activityTimer = setTimeout(() => { if (base === state) setBase('idle'); }, ms);
+}
+
+// Little rising glyphs (music notes, steam, anger marks). Colour is optional.
+export function floaters(n, glyphs, color) {
+  if (reducedMotion) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span');
+    s.className = 'float';
+    s.textContent = pick(glyphs);
+    if (color) s.style.color = color;
+    s.style.left = (28 + Math.random() * 60) + '%';
+    s.style.setProperty('--dx', ((Math.random() - 0.5) * 70) + 'px');
+    s.style.animationDelay = (i * 110) + 'ms';
+    els.stage.appendChild(s);
+    setTimeout(() => s.remove(), 1600 + i * 110);
+  }
 }
 
 // Streak accessory/glow: show the highest milestone earned (3/7/14/30).
@@ -134,8 +161,8 @@ export function beHappy(ms = 1400) {
 function startBlink() {
   (function loop() {
     setTimeout(() => {
-      const sleeping = base === 'sleeping' || base === 'sleepy';
-      if (!sleeping && !reacting && !reducedMotion) {
+      const eyesBusy = ['sleeping', 'sleepy', 'napping', 'meditating', 'angry'].includes(base);
+      if (!eyesBusy && !reacting && !reducedMotion) {
         els.stage.classList.add('blink');
         setTimeout(() => els.stage.classList.remove('blink'), 140);
       }

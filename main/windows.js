@@ -38,7 +38,26 @@ async function ensureLib() {
 
 function needed() {
   const s = getSettings() || {};
-  return !!(s.quietDND || (s.distractions && s.distractions.on));
+  return !!(s.quietDND || (s.distractions && s.distractions.on)
+    || (s.socialAnger && s.socialAnger.on) || s.appReactions);
+}
+
+function matchesList(hay, list) {
+  return (list || []).some((w) => {
+    const term = String(w || '').trim().toLowerCase();
+    return term && hay.includes(term);
+  });
+}
+
+// A coarse category from the app NAME only (never the title) so Puff can react
+// cutely to "what you're doing" without anything sensitive leaving this module.
+function categoryOf(ownerName, social) {
+  const n = (ownerName || '').toLowerCase();
+  if (social) return 'social';
+  if (/(code|vscode|cursor|intellij|pycharm|webstorm|xcode|sublime|\bzed\b|android studio)/.test(n)) return 'coding';
+  if (/(iterm|terminal|warp|alacritty|kitty|tmux|hyper|ghostty)/.test(n)) return 'terminal';
+  if (/(chrome|safari|firefox|edge|\barc\b|brave|opera|vivaldi)/.test(n)) return 'browser';
+  return 'other';
 }
 
 async function poll() {
@@ -46,9 +65,9 @@ async function poll() {
   const lib = await ensureLib();
   if (!lib) return;
 
-  // Only ask for the (permission-gated) title when distraction nudges are on;
-  // DND just needs the window bounds, which don't require any permission.
-  const wantTitle = !!(s.distractions && s.distractions.on);
+  // The (permission-gated) title is only needed for distraction / social
+  // matching; DND just needs the window bounds, which need no permission.
+  const wantTitle = !!((s.distractions && s.distractions.on) || (s.socialAnger && s.socialAnger.on));
 
   let info = null;
   try { info = await lib({ screenRecordingPermission: wantTitle, accessibilityPermission: false }); }
@@ -56,6 +75,8 @@ async function poll() {
 
   let fullscreen = false;
   let distraction = false;
+  let social = false;
+  let context = 'other';
 
   if (info && info.owner && !/electron|puff/i.test(info.owner.name || '')) {
     const disp = screen.getDisplayNearestPoint({ x: info.bounds.x, y: info.bounds.y });
@@ -64,19 +85,17 @@ async function poll() {
                  Math.abs(info.bounds.height - f.height) < 4;
 
     if (wantTitle) {
-      // title lives only for the length of this block
+      // title lives only for the length of this block, then is dropped
       const hay = ((info.title || '') + ' ' + (info.owner.name || '')).toLowerCase();
-      const list = (s.distractions.list || []);
-      distraction = list.some((w) => {
-        const term = String(w || '').trim().toLowerCase();
-        return term && hay.includes(term);
-      });
+      if (s.distractions && s.distractions.on) distraction = matchesList(hay, s.distractions.list);
+      if (s.socialAnger && s.socialAnger.on) social = matchesList(hay, s.socialAnger.list);
     }
+    context = categoryOf(info.owner.name, social);
   }
   // (title is now out of scope and gone)
 
-  const sig = `${fullscreen}|${distraction}`;
-  if (sig !== lastSig) { lastSig = sig; send({ fullscreen, distraction }); }
+  const sig = `${fullscreen}|${distraction}|${social}|${context}`;
+  if (sig !== lastSig) { lastSig = sig; send({ fullscreen, distraction, social, context }); }
 }
 
 function refresh() {
@@ -87,7 +106,7 @@ function refresh() {
   } else if (!on && timer) {
     clearInterval(timer); timer = null;
     lastSig = '';
-    send({ fullscreen: false, distraction: false }); // clear any stale DND
+    send({ fullscreen: false, distraction: false, social: false, context: 'other' }); // clear
   }
 }
 

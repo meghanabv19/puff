@@ -83,8 +83,7 @@ function createWindow() {
     },
   });
 
-  win.setAlwaysOnTop(true, 'screen-saver');
-  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true });
+  reassertTop();
   win.setIgnoreMouseEvents(true, { forward: true }); // click-through until the page says otherwise
   win.loadFile(path.join(__dirname, '..', 'renderer', 'index.html'));
 
@@ -103,6 +102,15 @@ function createWindow() {
   activity.start(() => win);
 }
 
+// Keep Puff floating above everything — other apps, all Spaces, even full-screen
+// windows (Chrome, VS Code, terminal). Re-asserted after sleep / display changes,
+// which is when macOS tends to drop the always-on-top level.
+function reassertTop() {
+  if (!win || win.isDestroyed()) return;
+  win.setAlwaysOnTop(true, 'screen-saver');
+  win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
+}
+
 // --- helpers handed to ipc / tray ---
 
 function setIgnore(ignore) {
@@ -118,7 +126,7 @@ function moveBy(dx, dy) {
 function showHide(force) {
   if (!win || win.isDestroyed()) return;
   const show = force === undefined ? !win.isVisible() : force;
-  if (show) { win.showInactive(); win.setAlwaysOnTop(true, 'screen-saver'); }
+  if (show) { win.showInactive(); reassertTop(); }
   else win.hide();
   activity.setHidden(!show);
   windows.setPaused(!show);
@@ -289,8 +297,14 @@ app.whenReady().then(() => {
   });
   powerMonitor.on('suspend', () => windows.setPaused(true));
   powerMonitor.on('lock-screen', () => windows.setPaused(true));
-  powerMonitor.on('resume', () => windows.setPaused(false));
-  powerMonitor.on('unlock-screen', () => windows.setPaused(false));
+  powerMonitor.on('resume', () => { windows.setPaused(false); reassertTop(); });
+  powerMonitor.on('unlock-screen', () => { windows.setPaused(false); reassertTop(); });
+
+  // Displays reconfigured (unplugged monitor, resolution change) can drop the
+  // always-on-top level — re-assert it.
+  screen.on('display-added', reassertTop);
+  screen.on('display-removed', reassertTop);
+  screen.on('display-metrics-changed', reassertTop);
 
   trayCtl = tray.build({
     command: (name) => {

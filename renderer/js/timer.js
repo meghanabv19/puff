@@ -2,10 +2,11 @@
 // lengths configurable. Completing a focus session bumps today's count and
 // credits the daily streak.
 
-import { $, S, pick, saveData } from './runtime.js';
+import { $, S, pick, saveData, isQuiet } from './runtime.js';
 import { LINES } from './lines.js';
 import { say } from './bubble.js';
-import { react, setBase, getBase, setStreakTier, notify } from './pet.js';
+import { react, setBase, getBase, setStreakTier, notify, activity, floaters } from './pet.js';
+import * as sound from './sound.js';
 
 let mode = 'focus';      // 'focus' | 'short' | 'long'
 let left = 0;            // seconds remaining
@@ -31,11 +32,46 @@ export function initTimer() {
   $('#skipBtn').onclick = skip;
   $('#quitBtn').onclick = () => { say('bye bye!', { ms: 900 }); setTimeout(() => window.puff && window.puff.quit(), 700); };
 
+  setInterval(maybeBreakPlay, 18000); // playful things during breaks
   render();
 }
 
 export function isRunning() { return running; }
 export function isFocusRunning() { return running && mode === 'focus'; }
+export function isBreakRunning() { return running && mode !== 'focus'; }
+
+// During a break, Puff wanders and occasionally does a little activity chosen by
+// how long the break is: short breaks → coffee/dance, long breaks → nap/meditate.
+function maybeBreakPlay() {
+  if (!isBreakRunning() || isQuiet()) return;
+  if (getBase() !== 'idle') return; // don't interrupt a wander/activity in progress
+
+  const r = Math.random();
+  if (r < 0.25) { say(pick(LINES.breakAsk), { ms: 4000 }); return; }
+  if (r < 0.55) return; // often just chill — never spammy
+
+  const mins = minutes(mode);
+  let pool;
+  if (mins <= 5) pool = ['coffee', 'dance'];
+  else if (mins >= 15) pool = ['nap', 'meditate', 'coffee'];
+  else pool = ['dance', 'coffee', 'meditate'];
+
+  switch (pick(pool)) {
+    case 'coffee':
+      activity('coffee', 6000); floaters(3, ['˚', '·', '~'], '#C9A27A');
+      say(pick(LINES.breakCoffee), { ms: 4000 }); break;
+    case 'dance':
+      activity('dancing', 5000); floaters(6, ['♪', '♫', '✧'], '#B7ACE8');
+      say(pick(LINES.breakDance), { ms: 4000 }); break;
+    case 'meditate':
+      activity('meditating', 8000);
+      say(pick(LINES.breakMeditate), { ms: 5000 }); break;
+    case 'nap':
+      activity('napping', 9000);
+      say(pick(LINES.breakNap), { ms: 5000 }); break;
+    default: break;
+  }
+}
 
 function render() {
   const full = fullFor(mode);
@@ -87,6 +123,7 @@ function finishRound() {
     setStreakTier(S.data.streak || 0);
 
     react('celebrate');
+    sound.fanfare();
     say(pick(LINES.focusDone), { ms: 6000 });
     notify('Focus session done', 'Nice work. Time for a break.');
 
