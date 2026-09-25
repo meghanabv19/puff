@@ -25,6 +25,7 @@ contextBridge.exposeInMainWorld('puff', {
   walk: (dx, ms) => ipcRenderer.send('win:walk', { dx, ms }),
   walkStop: () => ipcRenderer.send('win:walk-stop'),
   snap: () => ipcRenderer.send('win:snap'),
+  peekaboo: () => ipcRenderer.send('win:peekaboo'),
   hideFor: (minutes) => ipcRenderer.send('win:hide-for', minutes),
   contextMenu: () => ipcRenderer.send('ui:context-menu'),
 

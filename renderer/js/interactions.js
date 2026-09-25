@@ -55,8 +55,9 @@ export function initInteractions() {
   });
   puff.addEventListener('mouseleave', () => els.stage.classList.remove('hovered'));
 
-  // --- petting: rub the mouse back and forth over Puff -> love ---
-  let lastPetX = null, lastDir = 0, flips = 0, petWindow = 0, lastPurr = 0;
+  // --- petting & tickling: rub the mouse back and forth over Puff ---
+  // gentle rubbing -> love/purr; fast vigorous wiggling -> ticklish giggles.
+  let lastPetX = null, lastDir = 0, flips = 0, petWindow = 0, lastReact = 0;
   puff.addEventListener('mousemove', (e) => {
     if (down) return;
     if (lastPetX !== null) {
@@ -65,9 +66,15 @@ export function initInteractions() {
     }
     lastPetX = e.clientX;
     const now = Date.now();
-    if (now - petWindow > 1200) { petWindow = now; flips = 0; }
-    if (flips >= 5 && now - lastPurr > 2500) {
-      lastPurr = now; flips = 0;
+    if (now - petWindow > 1200) { petWindow = now; flips = 0; } // count flips per 1.2s
+    if (now - lastReact < 2200) return;
+
+    if (flips >= 9) {                       // fast, vigorous -> ticklish
+      lastReact = now; flips = 0;
+      react('tickle'); beHappy(1400);
+      say(pick(LINES.tickle), { ms: 2000, replace: true });
+    } else if (flips >= 5) {                // gentle rubbing -> love
+      lastReact = now; flips = 0;
       react('love'); beHappy(1800);
       say(pick(LINES.pet), { ms: 2200, replace: true });
     }
@@ -120,8 +127,9 @@ export function initInteractions() {
         wake();
         react('squish'); beHappy(900);
         const r = Math.random();
-        if (r < 0.22) react('wink');
-        else if (r < 0.4) react('giggle');
+        if (r < 0.18) react('wink');
+        else if (r < 0.34) react('giggle');
+        else if (r < 0.46) react('roll');
         if (Math.random() < 0.5) say(pick(LINES.click), { ms: 1800, replace: true });
       }, 240);
     }
@@ -151,14 +159,16 @@ function canPlay() {
 function maybePlay() {
   if (!canPlay()) return;
   const r = Math.random();
-  if (r < 0.4) {
+  if (r < 0.34) {
     activity('dancing', 4500);
     floaters(5, ['♪', '♫', '✧'], '#B7ACE8');
     if (Math.random() < 0.4) say(pick(LINES.idlePlay), { unsolicited: true, ms: 2600 });
-  } else if (r < 0.62) {
+  } else if (r < 0.52) {
     activity('coffee', 5000);
     floaters(3, ['˚', '·', '~'], '#C9A27A');
-  } else if (r < 0.78) {
+  } else if (r < 0.68) {
+    react('roll');   // playful barrel roll
+  } else if (r < 0.8) {
     react('wink');
   }
   // otherwise: do nothing this tick — wandering handles walking on its own

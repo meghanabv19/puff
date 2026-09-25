@@ -166,6 +166,22 @@ function walk(dx, ms) {
   }, 16);
 }
 
+// --- peekaboo: duck to the nearest side edge, then slide back after a beat ---
+let peekTimer = null;
+function peekaboo() {
+  if (!win || win.isDestroyed()) return;
+  walkStop();
+  if (peekTimer) { clearTimeout(peekTimer); peekTimer = null; }
+  const b = win.getBounds();
+  const a = screen.getDisplayMatching(b).workArea;
+  const center = b.x + WIN_W / 2;
+  const goRight = center > a.x + a.width / 2;
+  const hiddenX = goRight ? a.x + a.width - 40 : a.x - WIN_W + 40; // just a sliver off-screen
+  const homeX = b.x;
+  walk(hiddenX - b.x, 300);
+  peekTimer = setTimeout(() => { walk(homeX - hiddenX, 320); }, 900); // pop back out
+}
+
 // --- edge snap: if dropped near a display edge, sit flush against it ---
 function snapToEdge() {
   if (!win || win.isDestroyed()) return;
@@ -292,6 +308,7 @@ app.whenReady().then(() => {
     hideFor,
     popupContext,
     afterStoreChange,
+    peekaboo,
   });
 
   registerHotkeys();

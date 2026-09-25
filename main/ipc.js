@@ -11,7 +11,7 @@ const chat = require('./chat');
 function register(deps) {
   const { getWin, moveBy, setIgnore, showHide, savePosition,
           openSettings, pauseReminders, setLaunchAtLogin, boundsInfo,
-          walk, walkStop, snapToEdge, hideFor, popupContext, afterStoreChange } = deps;
+          walk, walkStop, snapToEdge, hideFor, popupContext, afterStoreChange, peekaboo } = deps;
   const notifyChange = (key) => { broadcastStore(getWin, key); if (afterStoreChange) afterStoreChange(key); };
 
   // --- window / mouse ---
@@ -26,6 +26,7 @@ function register(deps) {
   ipcMain.on('win:walk', (_e, { dx, ms }) => walk(dx, ms));
   ipcMain.on('win:walk-stop', () => walkStop());
   ipcMain.on('win:snap', () => snapToEdge());
+  ipcMain.on('win:peekaboo', () => peekaboo());
   ipcMain.on('win:hide-for', (_e, minutes) => hideFor(minutes));
   ipcMain.on('ui:context-menu', () => popupContext());
 

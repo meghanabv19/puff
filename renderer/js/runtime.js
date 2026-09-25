@@ -7,7 +7,7 @@ export const api = window.puff || {
   setIgnore() {}, moveBy() {}, hide() {}, show() {}, toggle() {},
   quit() { window.close(); },
   bounds: async () => null,
-  walk() {}, walkStop() {}, snap() {}, hideFor() {}, contextMenu() {},
+  walk() {}, walkStop() {}, snap() {}, peekaboo() {}, hideFor() {}, contextMenu() {},
   store: {
     getAll: async () => JSON.parse(localStorage.getItem('puff') || 'null'),
     get: async (k) => (JSON.parse(localStorage.getItem('puff') || '{}'))[k],

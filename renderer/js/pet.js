@@ -92,7 +92,9 @@ const REACTIONS = {
   love:      { stage: 'r-love', dur: 1700, hearts: 4 },
   surprised: { stage: 'r-surprised', dur: 900 },
   pouty:     { stage: 'r-pouty', dur: 1900 },
-  celebrate: { stage: 'r-celebrate', puff: 'jump', dur: 1800, stars: 6 },
+  celebrate: { stage: 'r-celebrate celebrating', puff: 'jump', dur: 2200, rainbow: 8 },
+  tickle:    { stage: 'r-giggle', puff: 'wiggle', dur: 700, hearts: 3 },
+  roll:      { puff: 'roll', dur: 900 },
 };
 
 let reacting = false;
@@ -112,13 +114,15 @@ function pump() {
   const r = queue.shift();
   reacting = true;
 
+  const stageClasses = r.stage ? r.stage.split(' ') : [];
   if (r.puff) playPuff(r.puff);
-  if (r.stage) els.stage.classList.add(r.stage);
+  if (stageClasses.length) els.stage.classList.add(...stageClasses);
   if (r.hearts) sparkle(r.hearts, false);
   if (r.stars) sparkle(r.stars, true);
+  if (r.rainbow) rainbowSparkle(r.rainbow);
 
   setTimeout(() => {
-    if (r.stage) els.stage.classList.remove(r.stage);
+    if (stageClasses.length) els.stage.classList.remove(...stageClasses);
     reacting = false;
     pump();
   }, r.dur);
@@ -155,6 +159,23 @@ export function sparkle(n = 3, star = false) {
 export function beHappy(ms = 1400) {
   els.stage.classList.add('happy');
   setTimeout(() => els.stage.classList.remove('happy'), ms);
+}
+
+// multicolored confetti for rainbow celebrations
+const RAINBOW = ['#FF5D73', '#FFA24D', '#FFE066', '#7BE495', '#5AC8FA', '#B18CFF'];
+function rainbowSparkle(n = 8) {
+  if (reducedMotion) return;
+  for (let i = 0; i < n; i++) {
+    const s = document.createElement('span');
+    s.className = 'float';
+    s.textContent = pick(['✦', '✧', '★', '♥', '•']);
+    s.style.color = RAINBOW[i % RAINBOW.length];
+    s.style.left = (18 + Math.random() * 66) + '%';
+    s.style.setProperty('--dx', ((Math.random() - 0.5) * 110) + 'px');
+    s.style.animationDelay = (i * 70) + 'ms';
+    els.stage.appendChild(s);
+    setTimeout(() => s.remove(), 1700 + i * 70);
+  }
 }
 
 /* ---------------- blinking ---------------- */

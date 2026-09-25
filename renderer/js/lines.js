@@ -13,6 +13,8 @@ export const LINES = {
   hover: ['hehe hi!', 'you found me~', 'boop?', 'working hard?', '(=^･ω･^=)'],
   click: ['hehe', 'that tickles!', "you're doing great{name}", 'ʕ•ᴥ•ʔ ♡', 'hi{name}!'],
   pet: ['purrrr~', "mmm that's nice", 'more pats pls', '♡ ♡ ♡'],
+  tickle: ['hehehe stop it! 😆', 'that tickles!!', 'ahaha~ no fair', 'eee hehe ♡', 'not the tickles 🤭'],
+  peekaboo: ['peekaboo! 🙈', 'boo! found you~', 'here i am{name}!', 'hehe, surprise ♡', 'ta-daaa ✨'],
   dragStart: ['wheee!', 'where are we going?!', 'aaa!'],
   wake: ['oh! welcome back{name}', '*yawn* hi again', 'i missed you{name}'],
 

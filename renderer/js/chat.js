@@ -3,8 +3,16 @@
 // canned lines so the feature works for everyone — no key or subscription needed.
 
 import { api, S, pick } from './runtime.js';
+import { LINES } from './lines.js';
 import { say } from './bubble.js';
 import { react } from './pet.js';
+
+// "puff!" / "hey puff" / just its name -> peekaboo
+function isCallingName(text) {
+  const name = 'puff';
+  const t = text.toLowerCase().replace(/[!?.,~]/g, '').trim();
+  return t === name || t === 'hey ' + name || t === 'hi ' + name || t === name + ' ' + name;
+}
 
 let inputEl;
 const history = []; // recent {role, content} turns for context
@@ -37,6 +45,14 @@ export function initChat() {
     const text = inputEl.value.trim();
     if (!text) return;
     inputEl.value = '';
+
+    // calling Puff by name -> peekaboo!
+    if (isCallingName(text)) {
+      api.peekaboo();
+      react('surprised');
+      setTimeout(() => { react('giggle'); say(pick(LINES.peekaboo), { ms: 2600, replace: true }); }, 1150);
+      return;
+    }
 
     history.push({ role: 'user', content: text });
     say('…', { ms: 12000, replace: true });
