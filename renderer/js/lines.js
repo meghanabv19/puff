@@ -37,6 +37,9 @@ export const LINES = {
   breakNap: ['power nap? 😴', 'quick rest with me~', 'zzz… just five minutes', 'recharge time{name}'],
   breakAsk: ['want a lil dance? 🎵', 'coffee break? ☕', 'shall we stretch together?', 'meditate for a sec? 🧘', 'nap with me{name}? 😴'],
 
+  // ambient playfulness through the day
+  idlePlay: ['la la la~', 'just vibing ♡', '🎵', 'wheee', 'boop!', 'da da da dum~', '(๑•̀ㅂ•́)و'],
+
   // "seeing what you're doing" — gentle app-aware asides
   watchCoding: ['ooh, coding? ✨', 'look at you go, dev {name}', 'i love watching you build ♡', 'clean code, i bet 👀'],
   watchBrowser: ['whatcha reading? 👀', 'ooh, interesting~', 'i see you browsing hehe'],

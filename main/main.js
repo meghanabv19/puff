@@ -107,8 +107,9 @@ function createWindow() {
 // which is when macOS tends to drop the always-on-top level.
 function reassertTop() {
   if (!win || win.isDestroyed()) return;
-  win.setAlwaysOnTop(true, 'screen-saver');
+  // Join every Space + be allowed over full-screen apps, THEN raise the level.
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true, skipTransformProcessType: true });
+  win.setAlwaysOnTop(true, 'screen-saver');
 }
 
 // --- helpers handed to ipc / tray ---
@@ -267,6 +268,12 @@ function afterStoreChange(key) {
 
 app.whenReady().then(() => {
   store.load();
+
+  // Become a menu-bar "accessory" app on macOS: no Dock icon, no app-switcher
+  // entry, and — crucially — its window can float over other apps' full-screen
+  // Spaces. This is what makes Puff truly always-on-top everywhere.
+  if (process.platform === 'darwin' && app.dock) app.dock.hide();
+
   createWindow();
 
   ipc.register({
@@ -305,6 +312,11 @@ app.whenReady().then(() => {
   screen.on('display-added', reassertTop);
   screen.on('display-removed', reassertTop);
   screen.on('display-metrics-changed', reassertTop);
+
+  // Safety net: whenever focus moves between windows/apps, make sure Puff is
+  // still pinned on top (cheap — a no-op if it already is).
+  app.on('browser-window-blur', reassertTop);
+  app.on('browser-window-focus', reassertTop);
 
   trayCtl = tray.build({
     command: (name) => {

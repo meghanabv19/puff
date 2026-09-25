@@ -5,7 +5,7 @@
 import { api, S, pick, isQuiet } from './runtime.js';
 import { LINES } from './lines.js';
 import { say } from './bubble.js';
-import { els, play, react, beHappy, setBase, getBase, face } from './pet.js';
+import { els, play, react, beHappy, setBase, getBase, face, activity, floaters } from './pet.js';
 import { wake } from './reminders.js';
 import { isBreakRunning } from './timer.js';
 
@@ -128,9 +128,41 @@ export function initInteractions() {
   });
 
   startWander();
+  startPlay();
 }
 
 export function isDragging() { return dragging; }
+
+/* ---------------- ambient playfulness ---------------- */
+// Through the day, when you've left Puff alone for a bit, it just... plays:
+// a little dance, an occasional coffee, a wink. Never during focus, sleep,
+// dragging, or do-not-disturb.
+function startPlay() {
+  setInterval(maybePlay, 30000);
+}
+
+function canPlay() {
+  return !isQuiet() &&
+    getBase() === 'idle' &&
+    !document.body.classList.contains('panel-open') &&
+    (Date.now() - lastInteraction) >= 20000;
+}
+
+function maybePlay() {
+  if (!canPlay()) return;
+  const r = Math.random();
+  if (r < 0.4) {
+    activity('dancing', 4500);
+    floaters(5, ['♪', '♫', '✧'], '#B7ACE8');
+    if (Math.random() < 0.4) say(pick(LINES.idlePlay), { unsolicited: true, ms: 2600 });
+  } else if (r < 0.62) {
+    activity('coffee', 5000);
+    floaters(3, ['˚', '·', '~'], '#C9A27A');
+  } else if (r < 0.78) {
+    react('wink');
+  }
+  // otherwise: do nothing this tick — wandering handles walking on its own
+}
 
 /* ---------------- wandering ---------------- */
 // Every so often, if you've left Puff alone (and it's not focusing, sleeping, or
