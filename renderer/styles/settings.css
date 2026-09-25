@@ -1,0 +1,48 @@
+:root {
+  --bg: #1E1B33; --card: #2A2650; --card-2: #332e5e;
+  --text: #EDE9FF; --muted: #A9A2CC; --accent: #9FF2D0; --lamp: #FFE58A;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: "Nunito", "Quicksand", ui-rounded, "Segoe UI", system-ui, sans-serif;
+  font-size: 14px; line-height: 1.4;
+}
+main { max-width: 460px; margin: 0 auto; padding: 18px 18px 40px; }
+h1 { font-size: 20px; margin: 6px 0 16px; display: flex; align-items: center; gap: 10px; }
+.saved { font-size: 12px; color: var(--accent); opacity: 0; transition: opacity .2s; }
+.saved.show { opacity: 1; }
+
+section { background: var(--card); border-radius: 16px; padding: 12px 14px; margin-bottom: 14px; }
+h2 { font-size: 14px; margin: 2px 0 10px; letter-spacing: .01em; }
+h2 small, section small { color: var(--muted); font-weight: 600; font-size: 12px; }
+
+label { display: block; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; }
+.row > span { color: var(--muted); flex: 1; }
+.row.check { justify-content: flex-start; gap: 8px; }
+.row.check > span { flex: none; color: var(--text); }
+.col { display: block; padding: 6px 0; }
+.col > span { color: var(--muted); display: block; margin-bottom: 6px; }
+
+input[type=text], input[type=number], select, textarea {
+  background: var(--card-2); color: var(--text); border: 0; border-radius: 10px;
+  padding: 7px 10px; font: inherit; width: 100%;
+}
+input[type=number] { width: 74px; text-align: right; }
+input[type=text], select, textarea { width: 100%; max-width: 220px; }
+textarea { max-width: none; resize: vertical; }
+input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--accent); flex: none; }
+input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--lamp); outline-offset: 2px; }
+
+.grid4 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid4 label { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.grid4 span { color: var(--muted); }
+
+.rem { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+.rem .check { flex: 1; display: flex; align-items: center; gap: 8px; }
+.rem input[type=number] { width: 64px; }
+
+.hint { color: var(--muted); font-size: 12px; margin: 4px 0 8px; }
+.hk { font-variant: small-caps; cursor: pointer; }
+.hk.capturing { outline: 2px solid var(--lamp); }

@@ -1,0 +1,17 @@
+# dependencies
+node_modules/
+
+# build output
+release/
+dist/
+out/
+
+# generated screenshots (dev helper)
+shots/
+
+# local data / logs
+puff-data.json
+*.log
+
+# os
+.DS_Store

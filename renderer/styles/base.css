@@ -1,0 +1,43 @@
+/* Palette + window reset. The character colours live here as CSS variables so
+   the art (and the panel) can be re-themed in one place. */
+:root {
+  --body: #EEE9FF;
+  --shade: #D9D1FA;
+  --limb: #B7ACE8;
+  --ink: #2B2540;
+  --blush: #FFB3C7;
+  --lamp: #FFE58A;
+  --focus: #9FF2D0;
+  --night: #1E1B33;
+  --night-2: #2C2850;
+  --text: #EDE9FF;
+  --muted: #A9A2CC;
+
+  --scale: 1;            /* pet size, set live from settings (S/M/L) */
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0; width: 100%; height: 100%;
+  background: transparent; overflow: hidden;
+  user-select: none; -webkit-user-select: none;
+  cursor: default;
+  font-family: "Nunito", "Quicksand", ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif;
+}
+
+/* When the display sleeps / locks, or Puff is hidden, we stop every animation
+   so idle CPU stays at zero. main sends 'power' -> body gets .asleep. */
+body.asleep *,
+body.asleep *::before,
+body.asleep *::after {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

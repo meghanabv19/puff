@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<!-- Strict CSP: only our own files run. Inline styles are allowed for the
+     little dynamically-positioned sparkles; no inline scripts at all. -->
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'">
+<title>Puff</title>
+<link rel="stylesheet" href="styles/base.css">
+<link rel="stylesheet" href="styles/pet.css">
+<link rel="stylesheet" href="styles/panel.css">
+</head>
+<body>
+
+<!-- ===================== Focus panel (double-click) ===================== -->
+<section id="panel" class="hit" aria-label="Focus panel">
+  <div class="timer">
+    <div id="time">25:00</div>
+    <div id="mode">Focus</div>
+  </div>
+  <div class="row">
+    <button id="startBtn" class="primary">Start focus</button>
+    <button id="resetBtn">Reset</button>
+    <button id="skipBtn">Skip</button>
+  </div>
+  <ul id="tasks"></ul>
+  <input id="newTask" placeholder="Add a task and press Enter" maxlength="60">
+  <div class="foot">
+    <span id="stats">No sessions yet today</span>
+    <button id="quitBtn">Quit Puff</button>
+  </div>
+</section>
+
+<!-- ===================== Speech bubble ===================== -->
+<div id="bubble" role="status" aria-live="polite"></div>
+
+<!-- ===================== Puff ===================== -->
+<div id="stage">
+  <span class="zzz">z z z</span>
+
+  <!-- The character. Every expression is a named group toggled by a CSS class
+       on #stage, so you can swap the art and keep the same state names.
+       See assets/puff.svg and the README ("Swapping the art"). -->
+  <svg id="puff" class="hit" viewBox="0 0 200 180" role="img" aria-label="Puff, your desk buddy">
+    <defs>
+      <filter id="glow" x="-150%" y="-150%" width="400%" height="400%">
+        <feGaussianBlur stdDeviation="3.5" result="b"/>
+        <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <ellipse class="shadow" cx="100" cy="171" rx="56" ry="6" fill="#0d0a1f" opacity=".22"/>
+    <!-- .facing flips left/right when Puff wanders; children keep their own motion -->
+    <g class="facing">
+    <g class="breathe">
+      <!-- streak aura (30-day glow), sits behind everything -->
+      <ellipse class="aura" cx="100" cy="108" rx="88" ry="76" fill="#FFE58A" opacity="0"/>
+      <!-- lamp antenna -->
+      <path class="antenna" d="M100 50 Q95 32 108 22" stroke="#B7ACE8" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <circle class="lamp" cx="109" cy="19" r="7" fill="#FFE58A" filter="url(#glow)"/>
+      <!-- feet -->
+      <ellipse class="foot foot-l" cx="78" cy="161" rx="15" ry="8" fill="#B7ACE8"/>
+      <ellipse class="foot foot-r" cx="122" cy="161" rx="15" ry="8" fill="#B7ACE8"/>
+      <!-- fluffy body -->
+      <g class="body" fill="#EEE9FF">
+        <circle cx="62" cy="90" r="30"/>
+        <circle cx="100" cy="74" r="38"/>
+        <circle cx="140" cy="90" r="30"/>
+        <ellipse cx="100" cy="116" rx="72" ry="45"/>
+      </g>
+      <ellipse class="belly" cx="100" cy="143" rx="50" ry="13" fill="#D9D1FA"/>
+      <!-- arms -->
+      <ellipse class="arm arm-l" cx="33" cy="124" rx="10" ry="13" fill="#E2DBFD"/>
+      <ellipse class="arm arm-r" cx="167" cy="124" rx="10" ry="13" fill="#E2DBFD"/>
+      <!-- cheeks -->
+      <g class="cheeks" fill="#FFB3C7">
+        <ellipse cx="63" cy="124" rx="11" ry="6.5"/>
+        <ellipse cx="137" cy="124" rx="11" ry="6.5"/>
+      </g>
+
+      <!-- ===== expressions (one shown at a time, switched by CSS state) ===== -->
+      <!-- eyes: open (default). #eyes moves to follow the cursor. -->
+      <g class="eyes-open">
+        <g id="eyes">
+          <circle cx="80" cy="110" r="7.5" fill="#2B2540"/>
+          <circle cx="120" cy="110" r="7.5" fill="#2B2540"/>
+          <circle cx="82.5" cy="107" r="2.4" fill="#fff"/>
+          <circle cx="122.5" cy="107" r="2.4" fill="#fff"/>
+        </g>
+      </g>
+      <!-- eyes: shut (blink / sleep) -->
+      <g class="eyes-shut" stroke="#2B2540" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M73 109 q7 6 14 0"/><path d="M113 109 q7 6 14 0"/>
+      </g>
+      <!-- eyes: happy (^^) -->
+      <g class="eyes-happy" stroke="#2B2540" stroke-width="3" fill="none" stroke-linecap="round">
+        <path d="M73 112 q7 -9 14 0"/><path d="M113 112 q7 -9 14 0"/>
+      </g>
+      <!-- eyes: love (heart eyes) -->
+      <g class="eyes-love" fill="#FF6F9C">
+        <path transform="translate(80 109) scale(.85)" d="M0 -2 C -3 -7 -10 -3 -10 2 C -10 6 -4 10 0 13 C 4 10 10 6 10 2 C 10 -3 3 -7 0 -2 Z"/>
+        <path transform="translate(120 109) scale(.85)" d="M0 -2 C -3 -7 -10 -3 -10 2 C -10 6 -4 10 0 13 C 4 10 10 6 10 2 C 10 -3 3 -7 0 -2 Z"/>
+      </g>
+      <!-- eyes: wide (surprised) -->
+      <g class="eyes-wide" fill="#2B2540">
+        <circle cx="80" cy="109" r="9.5"/><circle cx="120" cy="109" r="9.5"/>
+        <circle cx="83" cy="105.5" r="3" fill="#fff"/><circle cx="123" cy="105.5" r="3" fill="#fff"/>
+      </g>
+      <!-- eyes: wink -->
+      <g class="eyes-wink">
+        <path d="M73 110 q7 6 14 0" stroke="#2B2540" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <circle cx="120" cy="110" r="7.5" fill="#2B2540"/>
+        <circle cx="122.5" cy="107" r="2.4" fill="#fff"/>
+      </g>
+      <!-- eyes: sad (droopy + brows + a tear) -->
+      <g class="eyes-sad">
+        <path d="M72 100 q8 -3 15 1" stroke="#2B2540" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <path d="M128 100 q-8 -3 -15 1" stroke="#2B2540" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+        <circle cx="80" cy="113" r="6.5" fill="#2B2540"/>
+        <circle cx="120" cy="113" r="6.5" fill="#2B2540"/>
+        <circle cx="82" cy="111" r="2" fill="#fff"/><circle cx="122" cy="111" r="2" fill="#fff"/>
+        <ellipse class="tear" cx="72" cy="122" rx="2.6" ry="3.4" fill="#8FD0FF"/>
+      </g>
+
+      <!-- reading glasses, worn during focus -->
+      <g class="glasses" fill="#BFE8FF" fill-opacity=".16" stroke="#2B2540" stroke-width="2.2" stroke-linecap="round">
+        <circle cx="80" cy="110" r="12"/>
+        <circle cx="120" cy="110" r="12"/>
+        <path d="M92 109 h16" fill="none"/>
+        <path d="M68 107 l-11 -4" fill="none"/>
+        <path d="M132 107 l11 -4" fill="none"/>
+      </g>
+
+      <!-- mouths -->
+      <path class="mouth" d="M95 124 q5 5 10 0" stroke="#2B2540" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+      <ellipse class="mouth-o" cx="100" cy="126" rx="4" ry="5" fill="#2B2540"/>
+      <path class="mouth-sad" d="M93 128 q7 -7 14 0" stroke="#2B2540" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+
+      <!-- tiny laptop Puff types on during focus (lid faces us, mint logo) -->
+      <g class="laptop">
+        <path d="M72 152 v-19 a3 3 0 0 1 3 -3 h50 a3 3 0 0 1 3 3 v19 z" fill="#2C2850"/>
+        <rect x="64" y="151" width="72" height="8" rx="3" fill="#B7ACE8"/>
+        <circle cx="100" cy="141" r="3.2" fill="#9FF2D0"/>
+      </g>
+
+      <!-- streak accessories: shown one at a time by .streak-N (see pet.css) -->
+      <g class="acc acc-star" fill="#FFE58A" stroke="#E9C45A" stroke-width="1.2">
+        <path transform="translate(70 64)" d="M0 -7 L2 -2 L7 -2 L3 1.5 L4.5 6.5 L0 3.5 L-4.5 6.5 L-3 1.5 L-7 -2 L-2 -2 Z"/>
+      </g>
+      <g class="acc acc-bow" fill="#FF9EC0" stroke="#E97AA6" stroke-width="1.1" stroke-linejoin="round">
+        <path transform="translate(70 63)" d="M0 0 L-9 -5 L-9 5 Z"/>
+        <path transform="translate(70 63)" d="M0 0 L9 -5 L9 5 Z"/>
+        <circle transform="translate(70 63)" r="2.4"/>
+      </g>
+      <g class="acc acc-crown" fill="#FFD87A" stroke="#E9B84A" stroke-width="1.4" stroke-linejoin="round">
+        <path d="M82 52 L82 41 L91 48 L100 38 L109 48 L118 41 L118 52 Z"/>
+        <circle cx="100" cy="37.5" r="2.2" fill="#FF8FB0" stroke="none"/>
+      </g>
+    </g>
+    </g>
+  </svg>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

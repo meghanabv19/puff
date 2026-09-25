@@ -1,0 +1,118 @@
+/* Puff himself: stage, resting motion, expression switching, focus "working"
+   look, wander waddle, and the one-shot reaction keyframes. Everything is
+   transform/opacity only, so the GPU does the work and idle CPU stays ~0.
+
+   Expression model: exactly one eye-set + one mouth is visible at a time. The
+   base MOODS live as classes on #stage (idle / focus / sleeping / sleepy /
+   wander) and one-shot REACTIONS as r-* classes; both are managed by the state
+   machine in js/pet.js. */
+
+#stage {
+  position: absolute; left: 50%; bottom: 6px;
+  width: 180px; height: 170px;
+  transform: translateX(-50%) scale(var(--scale));
+  transform-origin: 50% 100%;
+}
+#puff {
+  display: block; width: 180px; height: 162px; overflow: visible;
+  cursor: grab; transform-origin: 50% 100%;
+  animation: floatIdle 5.5s ease-in-out infinite;   /* gentle cloud drift */
+}
+@keyframes floatIdle { 50% { transform: translateY(-4px); } }
+
+/* resting breathing (on the inner group, so it composes with the float above) */
+.breathe {
+  transform-box: fill-box; transform-origin: 50% 100%;
+  animation: breathe 3.2s ease-in-out infinite;
+}
+@keyframes breathe { 50% { transform: scale(1.025, .97); } }
+.sleeping .breathe { animation-duration: 5.5s; }
+.sleepy  .breathe { animation-duration: 4.4s; }
+
+/* lamp glow — mint during focus, dim while asleep */
+.lamp { animation: glow 2.6s ease-in-out infinite; transition: fill .6s; }
+@keyframes glow { 50% { opacity: .65; } }
+.focus .lamp { fill: var(--focus); animation-duration: 1.4s; }
+.sleeping .lamp { opacity: .35; animation: none; }
+
+/* cheeks blush on hover / happy / love */
+.cheeks { opacity: .5; transition: opacity .3s; }
+.hovered .cheeks, .happy .cheeks, .r-love .cheeks, .r-pouty .cheeks { opacity: 1; }
+
+/* ===================== expression switching ===================== */
+/* everything off by default; the rules below turn exactly one set back on */
+.eyes-shut, .eyes-happy, .eyes-love, .eyes-wide, .eyes-wink, .eyes-sad,
+.mouth-o, .mouth-sad, .glasses, .laptop { display: none; }
+
+/* eyes */
+.blink .eyes-open, .sleeping .eyes-open, .sleepy .eyes-open { display: none; }
+.blink .eyes-shut, .sleeping .eyes-shut, .sleepy .eyes-shut { display: inline; }
+.happy .eyes-open, .r-giggle .eyes-open, .r-celebrate .eyes-open { display: none; }
+.happy .eyes-happy, .r-giggle .eyes-happy, .r-celebrate .eyes-happy { display: inline; }
+.r-love .eyes-open  { display: none; }
+.r-love .eyes-love  { display: inline; }
+.r-surprised .eyes-open { display: none; }
+.r-surprised .eyes-wide { display: inline; }
+.r-wink .eyes-open  { display: none; }
+.r-wink .eyes-wink  { display: inline; }
+.r-pouty .eyes-open { display: none; }
+.r-pouty .eyes-sad  { display: inline; }
+.sleepy .eyes-shut  { opacity: .8; }
+
+/* mouths */
+.dragging .mouth, .r-surprised .mouth { display: none; }
+.dragging .mouth-o, .r-surprised .mouth-o { display: inline; }
+.r-pouty .mouth { display: none; }
+.r-pouty .mouth-sad { display: inline; }
+
+/* focus "working": glasses + laptop appear */
+.focus .glasses, .focus .laptop { display: inline; }
+
+/* streak accessories / glow — highest earned tier is shown */
+.acc, .aura { display: none; }
+.streak-3 .acc-star  { display: inline; }
+.streak-7 .acc-bow   { display: inline; }
+.streak-14 .acc-crown { display: inline; }
+.streak-30 .acc-crown { display: inline; }
+.streak-30 .aura { display: inline; animation: aura 2.8s ease-in-out infinite; }
+@keyframes aura { 0%,100% { opacity: .12; } 50% { opacity: .30; } }
+
+/* arm wave on hover */
+.arm { transform-box: fill-box; }
+.arm-r { transform-origin: 20% 90%; }
+.hovered .arm-r { animation: wave .6s ease-in-out 2; }
+@keyframes wave { 50% { transform: rotate(-35deg) translateY(-4px); } }
+
+/* tear rolls down while pouty */
+.tear { opacity: 0; }
+.r-pouty .tear { animation: tear 1.6s ease-in forwards; }
+@keyframes tear { 10% { opacity: .9; } 100% { transform: translateY(14px); opacity: 0; } }
+
+/* ===================== base-mood body motion ===================== */
+/* these override the idle float on #puff for the active mood */
+.focus #puff  { animation: typeBob .9s ease-in-out infinite; }
+@keyframes typeBob { 50% { transform: translateY(-2px); } }
+
+.wander #puff { animation: waddle .46s ease-in-out infinite; }
+@keyframes waddle {
+  0%,100% { transform: translateY(0) rotate(-4deg); }
+  50%     { transform: translateY(-3px) rotate(4deg); }
+}
+/* face the way we're walking */
+.facing { transform-box: fill-box; transform-origin: 50% 50%; transition: transform .12s; }
+.face-left .facing { transform: scaleX(-1); }
+
+/* ===================== one-shot reactions ===================== */
+.dragging #puff { animation: flail .28s ease-in-out infinite; cursor: grabbing; }
+@keyframes flail { 0%,100% { transform: rotate(-7deg); } 50% { transform: rotate(7deg); } }
+
+#puff.hop    { animation: hop .5s ease; }
+#puff.squish { animation: squish .45s ease; }
+#puff.plop   { animation: plop .45s ease; }
+#puff.jump   { animation: jump .8s ease; }
+#puff.shake  { animation: shake .5s ease; }
+@keyframes hop    { 35% { transform: translateY(-10px) scale(.97,1.04); } 70% { transform: scale(1.05,.95); } }
+@keyframes squish { 30% { transform: scale(1.16,.84); } 65% { transform: scale(.95,1.06); } }
+@keyframes plop   { 0% { transform: translateY(-14px); } 45% { transform: scale(1.2,.8); } 75% { transform: scale(.96,1.04); } }
+@keyframes jump   { 30% { transform: translateY(-34px) rotate(-6deg); } 55% { transform: translateY(0) scale(1.12,.88); } 70% { transform: translateY(-10px); } }
+@keyframes shake  { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-4px) rotate(-3deg); } 75% { transform: translateX(4px) rotate(3deg); } }

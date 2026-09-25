@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy"
+      content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'">
+<title>Puff — Settings</title>
+<link rel="stylesheet" href="styles/settings.css">
+</head>
+<body>
+<main>
+  <h1>Puff settings <span class="saved" id="saved">saved ✓</span></h1>
+
+  <section>
+    <h2>Puff</h2>
+    <label class="row"><span>What should Puff call you?</span>
+      <input type="text" id="s-name" maxlength="24" placeholder="your name"></label>
+    <label class="row"><span>Pet size</span>
+      <select id="s-size"><option value="S">Small</option><option value="M">Medium</option><option value="L">Large</option></select></label>
+    <label class="row"><span>How chatty (min gap between unprompted lines, min)</span>
+      <input type="number" id="m-gap" min="0" max="120" step="1"></label>
+    <label class="row check"><input type="checkbox" id="w-on"><span>Let Puff wander when idle</span></label>
+    <label class="row"><span>…after this many idle seconds</span>
+      <input type="number" id="w-idle" min="10" max="600" step="5"></label>
+    <label class="row check"><input type="checkbox" id="q-dnd"><span>Go quiet during full-screen apps (do-not-disturb)</span></label>
+    <label class="row check"><input type="checkbox" id="s-login"><span>Launch Puff at login</span></label>
+  </section>
+
+  <section>
+    <h2>Focus timer <small>minutes</small></h2>
+    <div class="grid4">
+      <label><span>Focus</span><input type="number" id="t-focus" min="1" max="180"></label>
+      <label><span>Short break</span><input type="number" id="t-short" min="1" max="60"></label>
+      <label><span>Long break</span><input type="number" id="t-long" min="1" max="60"></label>
+      <label><span>Rounds → long</span><input type="number" id="t-rounds" min="1" max="12"></label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Reminders</h2>
+    <div class="rem"><label class="check"><input type="checkbox" id="r-water-on"><span>Drink water — every</span></label><input type="number" id="r-water-min" min="5" max="240"><small>min</small></div>
+    <div class="rem"><label class="check"><input type="checkbox" id="r-stretch-on"><span>Stretch / posture — every</span></label><input type="number" id="r-stretch-min" min="5" max="240"><small>min</small></div>
+    <div class="rem"><label class="check"><input type="checkbox" id="r-eyes-on"><span>Eye break (20-20-20) — every</span></label><input type="number" id="r-eyes-min" min="5" max="120"><small>min</small></div>
+    <div class="rem"><label class="check"><input type="checkbox" id="r-late-on"><span>Late-night wind-down — after</span></label><input type="number" id="r-late-hour" min="18" max="23"><small>:00</small></div>
+  </section>
+
+  <section>
+    <h2>Distraction nudges <small>opt-in</small></h2>
+    <label class="row check"><input type="checkbox" id="d-on"><span>Nudge me if I drift during focus</span></label>
+    <p class="hint">Puff checks the active window title in memory only. Titles are never saved or logged. Enabling this may ask for Screen Recording permission (macOS).</p>
+    <label class="row"><span>Nudge after drifting for (seconds)</span>
+      <input type="number" id="d-thr" min="5" max="300" step="5"></label>
+    <label class="col"><span>Distraction list (comma-separated)</span>
+      <textarea id="d-list" rows="2" placeholder="youtube, reddit, instagram, netflix"></textarea></label>
+  </section>
+
+  <section>
+    <h2>Hotkeys <small>click a field, then press keys</small></h2>
+    <label class="row"><span>Toggle panel</span>
+      <input type="text" id="hk-panel" class="hk" readonly placeholder="click, then press"></label>
+    <label class="row"><span>Start / pause focus</span>
+      <input type="text" id="hk-focus" class="hk" readonly placeholder="click, then press"></label>
+  </section>
+</main>
+<script type="module" src="js/settings-window.js"></script>
+</body>
+</html>

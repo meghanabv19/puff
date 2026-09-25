@@ -1,0 +1,53 @@
+{
+  "name": "puff-desk-buddy",
+  "version": "0.1.0",
+  "description": "A cute desktop pet that keeps you company and helps you focus",
+  "author": "Meghana BV",
+  "license": "MIT",
+  "main": "main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "icons": "node scripts/gen-icons.js",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:mac": "electron-builder --mac",
+    "dist:win": "electron-builder --win"
+  },
+  "dependencies": {
+    "get-windows": "^9.3.0"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.meghana.puff",
+    "productName": "Puff",
+    "directories": { "output": "release", "buildResources": "build" },
+    "files": [
+      "main/**",
+      "preload.js",
+      "renderer/**",
+      "assets/icons/**",
+      "assets/puff.svg",
+      "package.json"
+    ],
+    "asarUnpack": [
+      "**/node_modules/get-windows/**"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "target": [ "dmg", "zip" ]
+    },
+    "win": {
+      "icon": "build/icon.png",
+      "target": [ "nsis" ]
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Utility",
+      "target": [ "AppImage" ]
+    }
+  }
+}
