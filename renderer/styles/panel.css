@@ -78,6 +78,18 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outl
   font: inherit; font-size: 14px;
 }
 #newTask::placeholder { color: var(--muted); }
+/* Puff's chat reply, shown inside the panel (the speech bubble is hidden while
+   the panel is open, so replies to what you type appear here instead). */
+#chatReply {
+  margin-top: 10px; padding: 9px 12px; border-radius: 12px;
+  background: var(--body); color: var(--ink);
+  font-size: 13.5px; font-weight: 700; line-height: 1.35;
+  min-height: 0; max-height: 0; padding-top: 0; padding-bottom: 0;
+  overflow: hidden; opacity: 0;
+  transition: opacity .2s, max-height .2s, padding .2s;
+}
+#chatReply.show { opacity: 1; max-height: 120px; padding-top: 9px; padding-bottom: 9px; }
+#chatReply.thinking { color: var(--muted); }
 #chatInput {
   width: 100%; margin-top: 8px; padding: 8px 10px;
   border-radius: 12px; border: 0; background: var(--night-2); color: var(--text);

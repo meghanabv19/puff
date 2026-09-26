@@ -5,7 +5,7 @@
 import { api, S, pick, isQuiet } from './runtime.js';
 import { LINES } from './lines.js';
 import { say } from './bubble.js';
-import { els, play, react, beHappy, setBase, getBase, face, activity, floaters } from './pet.js';
+import { els, play, react, beHappy, setBase, getBase, face, activity, floaters, dance } from './pet.js';
 import { wake } from './reminders.js';
 import { isBreakRunning } from './timer.js';
 
@@ -160,8 +160,7 @@ function maybePlay() {
   if (!canPlay()) return;
   const r = Math.random();
   if (r < 0.34) {
-    activity('dancing', 4500);
-    floaters(5, ['♪', '♫', '✧'], '#B7ACE8');
+    dance(undefined, 4800); // random dance style
     if (Math.random() < 0.4) say(pick(LINES.idlePlay), { unsolicited: true, ms: 2600 });
   } else if (r < 0.52) {
     activity('coffee', 5000);

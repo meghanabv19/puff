@@ -5,7 +5,7 @@
 import { api, S, pick } from './runtime.js';
 import { LINES } from './lines.js';
 import { say } from './bubble.js';
-import { react, activity, floaters } from './pet.js';
+import { react, activity, floaters, dance } from './pet.js';
 
 // A few short jokes so "tell me a joke" always lands, even offline.
 const JOKES = [
@@ -18,32 +18,46 @@ const JOKES = [
   'i told my desk a joke… it just stayed board 🪵',
 ];
 
+// Say a line so it's visible whether or not the panel is open (panel: #chatReply,
+// closed: the floating bubble).
+function tell(line) {
+  showReply(line);
+  say(line, { ms: 5000, replace: true });
+}
+
 // Action commands: typing these makes Puff *do* something. Returns true if it
 // handled the text so we skip the chat model.
 function handleCommand(text) {
   const t = text.toLowerCase().replace(/[!?.,~]/g, '').trim();
 
-  if (/\b(dance|boogie|party)\b/.test(t)) {
-    activity('dancing', 5000); floaters(6, ['♪', '♫', '✧'], '#B7ACE8');
-    say(pick(LINES.breakDance), { ms: 4000, replace: true });
+  // specific dance styles
+  let style = null;
+  if (/\bballet\b/.test(t)) style = 'ballet';
+  else if (/\bsalsa\b/.test(t)) style = 'salsa';
+  else if (/\b(twirl|pirouette|spin)\b/.test(t)) style = 'twirl';
+  else if (/\b(dance|boogie|party|dancing)\b/.test(t)) style = 'random';
+  if (style) {
+    const did = dance(style === 'random' ? undefined : style, 5600);
+    const line = { ballet: 'ballet time~ 🩰', salsa: '¡salsa! 💃', twirl: 'wheee, spinning! 🌀' }[did] || pick(LINES.breakDance);
+    tell(line);
     return true;
   }
   if (/\b(joke|funny|make me laugh)\b/.test(t)) {
-    react('giggle'); say(pick(JOKES), { ms: 7000, replace: true });
+    react('giggle'); tell(pick(JOKES));
     return true;
   }
   if (/\b(roll|barrel roll|tumble)\b/.test(t)) { react('roll'); return true; }
   if (/\b(coffee|tea|drink)\b/.test(t)) {
     activity('coffee', 6000); floaters(3, ['˚', '·', '~'], '#C9A27A');
-    say(pick(LINES.breakCoffee), { ms: 4000, replace: true });
+    tell(pick(LINES.breakCoffee));
     return true;
   }
   if (/\b(nap|sleep|rest)\b/.test(t)) {
-    activity('napping', 8000); say(pick(LINES.breakNap), { ms: 5000, replace: true });
+    activity('napping', 8000); tell(pick(LINES.breakNap));
     return true;
   }
   if (/\b(meditate|breathe|calm|relax)\b/.test(t)) {
-    activity('meditating', 8000); say(pick(LINES.breakMeditate), { ms: 5000, replace: true });
+    activity('meditating', 8000); tell(pick(LINES.breakMeditate));
     return true;
   }
   if (/\b(spin|celebrate|yay|hooray|woohoo)\b/.test(t)) { react('celebrate'); return true; }
@@ -68,8 +82,21 @@ export function doPeekaboo() {
   setTimeout(() => { react('giggle'); say(pick(LINES.peekaboo), { ms: 2600, replace: true }); }, 1150);
 }
 
-let inputEl;
+let inputEl, replyEl;
 const history = []; // recent {role, content} turns for context
+
+// Show Puff's reply in the panel (the floating bubble is hidden while the panel
+// is open). Also mirror to the bubble for when chat is triggered another way.
+function showReply(text, thinking = false) {
+  if (!replyEl) return;
+  replyEl.textContent = text;
+  replyEl.classList.toggle('thinking', thinking);
+  replyEl.classList.add('show');
+  if (!thinking) {
+    clearTimeout(showReply._t);
+    showReply._t = setTimeout(() => replyEl.classList.remove('show'), 9000);
+  }
+}
 
 function nameBit() {
   const n = (S.settings && S.settings.name ? S.settings.name : '').trim().toLowerCase();
@@ -100,6 +127,7 @@ function offlineReply(text) {
 
 export function initChat() {
   inputEl = document.getElementById('chatInput');
+  replyEl = document.getElementById('chatReply');
   if (!inputEl) return;
 
   inputEl.addEventListener('keydown', async (e) => {
@@ -115,7 +143,7 @@ export function initChat() {
     if (handleCommand(text)) return;
 
     history.push({ role: 'user', content: text });
-    say('…', { ms: 12000, replace: true });
+    showReply('puff is thinking…', true);
     react('giggle');
 
     let reply;
@@ -128,10 +156,20 @@ export function initChat() {
       reply = offlineReply(text);
     }
 
+    // resolve {name} + strip any stage-direction asterisks a local model might add
+    reply = fillName(reply).replace(/\*[^*]*\*/g, '').replace(/\s{2,}/g, ' ').trim() || pick(LINES.idlePlay);
+
     history.push({ role: 'assistant', content: reply });
     if (history.length > 16) history.splice(0, history.length - 16);
 
-    say(reply, { ms: Math.min(9000, 2600 + reply.length * 40), replace: true });
+    showReply(reply);
+    say(reply, { ms: Math.min(9000, 2600 + reply.length * 40), replace: true }); // also for when panel closes
     react('love');
   });
+}
+
+// resolve a leading-space {name} style token if a canned line still has one
+function fillName(s) {
+  const n = (S.settings && S.settings.name ? S.settings.name : '').trim().toLowerCase();
+  return s.replace(/\{name\}/g, n ? ' ' + n : '');
 }

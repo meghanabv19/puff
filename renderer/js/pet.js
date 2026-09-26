@@ -53,6 +53,21 @@ export function activity(state, ms, onStart) {
   activityTimer = setTimeout(() => { if (base === state) setBase('idle'); }, ms);
 }
 
+// Dance with a style: ballet / salsa / twirl / bounce (or random). The style
+// class layers on the 'dancing' base and reverts with it.
+const DANCE_STYLES = ['bounce', 'ballet', 'salsa', 'twirl'];
+let danceTimer = null;
+export function dance(style, ms = 5200) {
+  const s = DANCE_STYLES.includes(style) ? style : pick(DANCE_STYLES);
+  DANCE_STYLES.forEach((d) => els.stage.classList.remove('dance-' + d));
+  if (s !== 'bounce') els.stage.classList.add('dance-' + s);
+  activity('dancing', ms);
+  floaters(6, ['♪', '♫', '✧'], '#B7ACE8');
+  clearTimeout(danceTimer);
+  danceTimer = setTimeout(() => DANCE_STYLES.forEach((d) => els.stage.classList.remove('dance-' + d)), ms + 40);
+  return s;
+}
+
 // Little rising glyphs (music notes, steam, anger marks). Colour is optional.
 export function floaters(n, glyphs, color) {
   if (reducedMotion) return;

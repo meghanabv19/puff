@@ -5,7 +5,7 @@
 import { $, S, pick, saveData, isQuiet } from './runtime.js';
 import { LINES } from './lines.js';
 import { say } from './bubble.js';
-import { react, setBase, getBase, setStreakTier, notify, activity, floaters } from './pet.js';
+import { react, setBase, getBase, setStreakTier, notify, activity, floaters, dance } from './pet.js';
 import * as sound from './sound.js';
 
 let mode = 'focus';      // 'focus' | 'short' | 'long'
@@ -61,7 +61,7 @@ function maybeBreakPlay() {
       activity('coffee', 6000); floaters(3, ['˚', '·', '~'], '#C9A27A');
       say(pick(LINES.breakCoffee), { ms: 4000 }); break;
     case 'dance':
-      activity('dancing', 5000); floaters(6, ['♪', '♫', '✧'], '#B7ACE8');
+      dance(undefined, 5200); // random style: ballet / salsa / twirl / bounce
       say(pick(LINES.breakDance), { ms: 4000 }); break;
     case 'meditate':
       activity('meditating', 8000);
