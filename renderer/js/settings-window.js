@@ -60,7 +60,9 @@ function collect() {
     list: $('d-list').value.split(/[,\n]/).map((s) => s.trim()).filter(Boolean),
   };
   settings.chat = {
-    on: $('chat-on').checked,
+    on: true,
+    provider: $('chat-provider').value,
+    ollamaModel: $('chat-ollama').value.trim(),
     apiKey: $('chat-key').value.trim(),
     model: $('chat-model').value,
   };
@@ -101,7 +103,8 @@ function fill() {
   $('d-list').value = (d.list || []).join(', ');
 
   const c = s.chat || {};
-  $('chat-on').checked = !!c.on;
+  $('chat-provider').value = c.provider || 'auto';
+  $('chat-ollama').value = c.ollamaModel || '';
   $('chat-key').value = c.apiKey || '';
   $('chat-model').value = c.model || 'claude-opus-4-8';
   $('social-on').checked = !(s.socialAnger && s.socialAnger.on === false);

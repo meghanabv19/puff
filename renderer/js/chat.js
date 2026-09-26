@@ -30,18 +30,26 @@ function nameBit() {
   return n ? ' ' + n : '';
 }
 
-// keyword-ish fallback when there's no API key
+// Free, zero-setup fallback when there's no local/AI model. Not a real
+// conversation, but warm and contextual so it still feels alive.
 function offlineReply(text) {
   const t = text.toLowerCase();
-  if (/\b(hi|hello|hey|yo|hiya)\b/.test(t)) return 'hi' + nameBit() + '! ♡';
-  if (/tired|sleepy|exhausted|burn/.test(t)) return 'rest is part of the work~ take a little break with me?';
-  if (/sad|down|stressed|anxious|overwhelm/.test(t)) return "i'm right here with you ♡";
-  if (/thank/.test(t)) return 'anytime{name}! ✨';
-  if (/help|stuck|hard/.test(t)) return "let's do one tiny step together?";
-  if (/focus|work|study/.test(t)) return 'double-click me to start a focus session ✦';
-  if (/love|cute|adorable/.test(t)) return '♡ ♡ ♡';
-  if (/bye|goodnight|night/.test(t)) return 'byee{name}, i\'ll be right here ♡';
-  return pick(['tell me more~', 'hehe ♡', "i'm listening{name}", 'boop!', '(=^･ω･^=)']);
+  const n = nameBit();
+  if (/\b(hi|hello|hey|yo|hiya|sup)\b/.test(t)) return pick(['hi' + n + '! ♡', 'hello hello~ 🌸', 'hehe hi' + n + '!']);
+  if (/how are you|how r u|how you doin|whats up|what's up|wyd/.test(t)) return pick(["i'm cozy and happy you're here ♡", 'just floating around, watching you work ✨', 'great now that you said hi~']);
+  if (/tired|sleepy|exhausted|burn(t|ed)? out|no energy/.test(t)) return pick(['rest is part of the work~ take a little break with me?', 'aw' + n + ', a quick nap or a stretch? ♡', "you've done enough for now, breathe 😴"]);
+  if (/sad|down|cry|lonely|stressed|anxious|overwhelm|worried|upset/.test(t)) return pick(["i'm right here with you ♡", "one thing at a time" + n + ", we've got this", 'sending you the softest hug 🫂']);
+  if (/thank/.test(t)) return pick(['anytime' + n + '! ✨', 'of course ♡', 'hehe ☺️']);
+  if (/help|stuck|hard|difficult|cant|can't|struggl/.test(t)) return pick(["let's do one tiny step together?", 'break it into a small piece — you can do that bit ♡', "wanna start a 25-min focus? i'll sit with you"]);
+  if (/focus|work|study|deadline|task|todo|to-do/.test(t)) return pick(['double-click me to start a focus session ✦', "let's get one thing done together~", 'i believe in you' + n + ' ♡']);
+  if (/break|rest|pause/.test(t)) return pick(['yes! stretch, water, a little wiggle ♡', 'break time~ shall i dance? 🎵', 'good idea' + n + ', rest those eyes']);
+  if (/water|thirsty|drink/.test(t)) return pick(['yes! sip sip 💧', 'hydration hero ♡']);
+  if (/love|cute|adorable|sweet|precious/.test(t)) return pick(['♡ ♡ ♡', 'you\'re the cute one' + n + '! 🥰', 'hehe 🌸']);
+  if (/hungry|food|eat|lunch|dinner|snack/.test(t)) return pick(['go nourish yourself' + n + ' ♡', 'snack break! i\'ll guard your desk 🍪']);
+  if (/bye|goodnight|good night|night|see ya|cya/.test(t)) return pick(['byee' + n + ", i'll be right here ♡", 'rest well 🌙', 'sweet dreams~ 😴']);
+  if (/who are you|what are you|your name/.test(t)) return pick(["i'm puff, your lil cloud buddy ☁️♡", 'just puff! here to keep you company ✨']);
+  if (/\?$/.test(t.trim())) return pick(['hmm~ good question ♡', "i'm just a lil cloud, but i'm rooting for you!", 'tell me more' + n + '?']);
+  return pick(['tell me more~', 'hehe ♡', "i'm listening" + n, 'boop!', '(=^･ω･^=)', 'mmhm ♡', "i'm here 🌸"]);
 }
 
 export function initChat() {

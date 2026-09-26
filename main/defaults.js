@@ -31,11 +31,14 @@ function defaultSettings() {
       cooldownMinutes: 3,
       list: ['youtube', 'instagram', 'reddit', 'twitter', ' x ', 'tiktok', 'facebook', 'netflix', 'snapchat'],
     },
-    // Talk to Puff — a small Claude API call. The key lives in this file and is
-    // used only in the main process. Leave apiKey empty to keep chat off.
+    // Talk to Puff. Free by default: uses a LOCAL model via Ollama if one is
+    // running (no key, no cost, private), otherwise cute built-in replies.
+    // Only the optional 'anthropic' provider + a key ever costs money.
     chat: {
-      on: false,
-      apiKey: '',
+      on: true,
+      provider: 'auto',        // auto | ollama | anthropic | canned
+      ollamaModel: '',         // '' = use whatever local model is available
+      apiKey: '',              // only for the optional paid Anthropic provider
       model: 'claude-opus-4-8',
     },
     sound: { on: true },           // tiny celebration chimes

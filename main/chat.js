@@ -1,72 +1,107 @@
 'use strict';
 
-// Puff's "talk to me" brain — a small Claude API call.
+// Puff's "talk to me" brain. Three ways to run it, in this priority:
 //
-// Uses a raw HTTPS request (Node/Electron global fetch) rather than the SDK to
-// keep the app dependency-light, as the project asks. The API key lives in the
-// JSON store and is read only here in the main process — it never reaches the
-// renderer.
+//   1. LOCAL model via Ollama (http://localhost:11434) — FREE, private, offline.
+//      This is the default. Install Ollama + a small model and Puff just talks.
+//   2. Anthropic API — only if you deliberately add a key (pay-as-you-go).
+//   3. Built-in canned replies — always available, zero setup, zero cost.
+//
+// Nothing here costs money unless you explicitly choose provider 'anthropic'
+// and supply a key. Titles/keys never leave the main process.
 
 const store = require('./store');
 
-const ENDPOINT = 'https://api.anthropic.com/v1/messages';
-const ANTHROPIC_VERSION = '2023-06-01';
+const OLLAMA = 'http://localhost:11434';
+const ANTHROPIC = 'https://api.anthropic.com/v1/messages';
 
-const SYSTEM = `you are puff — a tiny round lavender cloud desk buddy who keeps {name} company while they work.
+const PERSONA = `you are puff — a tiny round lavender cloud desk buddy who keeps {name} company while they work.
 speak in short, warm, lowercase lines: one or two sentences, cozy and a little playful, full of heart.
 you help {name} focus and take real breaks, celebrate small wins, and never guilt-trip or nag.
-sometimes use their name. no markdown, no lists, at most one emoji. reply with only your line — no preamble, no explanation of your reasoning.`;
+sometimes use their name. no markdown, no lists, at most one emoji. reply with ONLY your line.`;
 
-// messages: [{ role: 'user'|'assistant', content: '...' }, ...]
+function persona(name) { return PERSONA.replace(/\{name\}/g, name); }
+
+async function ollamaUp() {
+  try {
+    const r = await fetch(OLLAMA + '/api/tags', { method: 'GET' });
+    if (!r.ok) return null;
+    const d = await r.json();
+    return (d.models || []).map((m) => m.name);
+  } catch { return null; }
+}
+
+async function askOllama(messages, name, model) {
+  const res = await fetch(OLLAMA + '/api/chat', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      model,
+      stream: false,
+      options: { temperature: 0.8, num_predict: 120 },
+      messages: [{ role: 'system', content: persona(name) }, ...messages.slice(-8)],
+    }),
+  });
+  if (!res.ok) throw new Error('ollama ' + res.status);
+  const data = await res.json();
+  return (data.message && data.message.content || '').trim();
+}
+
+async function askAnthropic(messages, name, chat) {
+  const res = await fetch(ANTHROPIC, {
+    method: 'POST',
+    headers: {
+      'x-api-key': chat.apiKey,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: chat.model || 'claude-opus-4-8',
+      max_tokens: 200,
+      system: persona(name),
+      messages: messages.slice(-10),
+    }),
+  });
+  if (!res.ok) throw new Error('anthropic ' + res.status);
+  const data = await res.json();
+  if (data.stop_reason === 'refusal') return "i'd rather not answer that one ♡";
+  return (data.content || []).filter((b) => b.type === 'text').map((b) => b.text).join(' ').trim();
+}
+
+// messages: [{ role: 'user'|'assistant', content }]
 async function ask(messages) {
   const s = (store.getAll() && store.getAll().settings) || {};
   const chat = s.chat || {};
   const name = (s.name || 'friend').trim() || 'friend';
+  const provider = chat.provider || 'auto'; // auto | ollama | anthropic | canned
 
-  if (!chat.apiKey) {
-    return { ok: false, error: 'no-key', text: 'add an api key in settings and i can really chat with you ♡' };
+  // 1) local model (free) — used in 'auto' and 'ollama'
+  if (provider === 'auto' || provider === 'ollama') {
+    const models = await ollamaUp();
+    if (models && models.length) {
+      const want = chat.ollamaModel && models.includes(chat.ollamaModel) ? chat.ollamaModel : models[0];
+      try {
+        const text = await askOllama(messages, name, want);
+        if (text) return { ok: true, via: 'ollama', text };
+      } catch (e) { console.error('[chat] ollama:', e.message); }
+    } else if (provider === 'ollama') {
+      return { ok: false, error: 'no-ollama', text: 'start ollama and i can really chat ♡ (see settings)' };
+    }
   }
 
-  const model = chat.model || 'claude-opus-4-8';
-  try {
-    const res = await fetch(ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'x-api-key': chat.apiKey,
-        'anthropic-version': ANTHROPIC_VERSION,
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        model,
-        max_tokens: 200,
-        system: SYSTEM.replace(/\{name\}/g, name),
-        messages: (messages || []).slice(-10),
-      }),
-    });
-
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      console.error('[chat] HTTP', res.status, body.slice(0, 200));
-      const text = res.status === 401 ? "hmm, that api key didn't work 🥺"
-        : res.status === 429 ? 'too many words at once — give me a sec?'
-        : "i couldn't find my words just now, try again?";
-      return { ok: false, error: `http-${res.status}`, text };
+  // 2) Anthropic (only if explicitly configured with a key)
+  if ((provider === 'auto' || provider === 'anthropic') && chat.apiKey) {
+    try {
+      const text = await askAnthropic(messages, name, chat);
+      if (text) return { ok: true, via: 'anthropic', text };
+    } catch (e) {
+      console.error('[chat] anthropic:', e.message);
+      if (provider === 'anthropic') return { ok: false, error: 'anthropic', text: "hmm, my brain hiccuped — try again?" };
     }
-
-    const data = await res.json();
-    if (data.stop_reason === 'refusal') {
-      return { ok: false, error: 'refusal', text: "i'd rather not answer that one ♡" };
-    }
-    const text = (data.content || [])
-      .filter((b) => b.type === 'text')
-      .map((b) => b.text)
-      .join(' ')
-      .trim();
-    return { ok: true, text: text || '…' };
-  } catch (e) {
-    console.error('[chat] error', e.message);
-    return { ok: false, error: 'network', text: 'no internet for my brain right now 🥺' };
   }
+
+  // 3) canned (free, always works) — signal the renderer to use its cute fallback
+  return { ok: false, error: 'no-key', text: '' };
 }
 
-module.exports = { ask };
+module.exports = { ask, ollamaUp };
