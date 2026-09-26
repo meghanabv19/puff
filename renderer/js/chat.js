@@ -5,7 +5,53 @@
 import { api, S, pick } from './runtime.js';
 import { LINES } from './lines.js';
 import { say } from './bubble.js';
-import { react } from './pet.js';
+import { react, activity, floaters } from './pet.js';
+
+// A few short jokes so "tell me a joke" always lands, even offline.
+const JOKES = [
+  'why did the cloud stay calm? it went with the flow ☁️',
+  "what's a cloud's favorite snack? cotton candy! 🍬",
+  'i tried to catch fog earlier… i mist 😆',
+  'why was the little cloud so proud? it was on cloud nine ✨',
+  "what do you call a nervous cloud? a little mist-ified 😅",
+  'why did the computer go to therapy? too many bytes of stress 💻',
+  'i told my desk a joke… it just stayed board 🪵',
+];
+
+// Action commands: typing these makes Puff *do* something. Returns true if it
+// handled the text so we skip the chat model.
+function handleCommand(text) {
+  const t = text.toLowerCase().replace(/[!?.,~]/g, '').trim();
+
+  if (/\b(dance|boogie|party)\b/.test(t)) {
+    activity('dancing', 5000); floaters(6, ['♪', '♫', '✧'], '#B7ACE8');
+    say(pick(LINES.breakDance), { ms: 4000, replace: true });
+    return true;
+  }
+  if (/\b(joke|funny|make me laugh)\b/.test(t)) {
+    react('giggle'); say(pick(JOKES), { ms: 7000, replace: true });
+    return true;
+  }
+  if (/\b(roll|barrel roll|tumble)\b/.test(t)) { react('roll'); return true; }
+  if (/\b(coffee|tea|drink)\b/.test(t)) {
+    activity('coffee', 6000); floaters(3, ['˚', '·', '~'], '#C9A27A');
+    say(pick(LINES.breakCoffee), { ms: 4000, replace: true });
+    return true;
+  }
+  if (/\b(nap|sleep|rest)\b/.test(t)) {
+    activity('napping', 8000); say(pick(LINES.breakNap), { ms: 5000, replace: true });
+    return true;
+  }
+  if (/\b(meditate|breathe|calm|relax)\b/.test(t)) {
+    activity('meditating', 8000); say(pick(LINES.breakMeditate), { ms: 5000, replace: true });
+    return true;
+  }
+  if (/\b(spin|celebrate|yay|hooray|woohoo)\b/.test(t)) { react('celebrate'); return true; }
+  if (/\b(wink)\b/.test(t)) { react('wink'); return true; }
+  if (/\b(jump|hop)\b/.test(t)) { react('jump'); return true; }
+  if (/\b(hide|peekaboo|peek a boo)\b/.test(t)) { doPeekaboo(); return true; }
+  return false;
+}
 
 // "puff!" / "hey puff" / just its name -> peekaboo
 function isCallingName(text) {
@@ -64,6 +110,9 @@ export function initChat() {
 
     // calling Puff by name -> peekaboo!
     if (isCallingName(text)) { doPeekaboo(); return; }
+
+    // action words ("dance", "tell me a joke", "roll"…) -> Puff does the thing
+    if (handleCommand(text)) return;
 
     history.push({ role: 'user', content: text });
     say('…', { ms: 12000, replace: true });
