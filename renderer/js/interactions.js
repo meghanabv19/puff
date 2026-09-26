@@ -141,6 +141,33 @@ export function initInteractions() {
 
 export function isDragging() { return dragging; }
 
+// Dance across the WHOLE screen: play the dance style while gliding the window
+// from edge to edge and back. Used by the ballet/salsa/dance chat commands.
+export async function danceAcross(style, ms = 7000) {
+  const did = dance(style, ms); // the visual style + notes
+  const info = await api.bounds();
+  if (!info) return did;
+  const { bounds, workArea } = info;
+  const leftX = workArea.x + 12;
+  const rightX = workArea.x + workArea.width - bounds.width - 12;
+  const home = bounds.x;
+
+  // sweep the full width: to the far side, across to the other, then home
+  const legs = (home - leftX) < (rightX - home)
+    ? [rightX, leftX, home]   // nearer the left -> go right first
+    : [leftX, rightX, home];
+  const legMs = Math.floor(ms / legs.length);
+  let curX = home;
+  for (const tx of legs) {
+    face(tx < curX ? 'left' : 'right');
+    api.walk(tx - curX, legMs - 60);
+    curX = tx;
+    await new Promise((r) => setTimeout(r, legMs));
+  }
+  face('right');
+  return did;
+}
+
 /* ---------------- ambient playfulness ---------------- */
 // Through the day, when you've left Puff alone for a bit, it just... plays:
 // a little dance, an occasional coffee, a wink. Never during focus, sleep,

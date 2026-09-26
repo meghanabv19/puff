@@ -5,7 +5,8 @@
 import { api, S, pick } from './runtime.js';
 import { LINES } from './lines.js';
 import { say } from './bubble.js';
-import { react, activity, floaters, dance } from './pet.js';
+import { react, activity, floaters, dance, beHappy } from './pet.js';
+import { danceAcross } from './interactions.js';
 
 // A few short jokes so "tell me a joke" always lands, even offline.
 const JOKES = [
@@ -37,13 +38,17 @@ function handleCommand(text) {
   else if (/\b(twirl|pirouette|spin)\b/.test(t)) style = 'twirl';
   else if (/\b(dance|boogie|party|dancing)\b/.test(t)) style = 'random';
   if (style) {
-    const did = dance(style === 'random' ? undefined : style, 5600);
-    const line = { ballet: 'ballet time~ 🩰', salsa: '¡salsa! 💃', twirl: 'wheee, spinning! 🌀' }[did] || pick(LINES.breakDance);
+    // dance across the whole screen for the big styles; twirl spins in place
+    if (style === 'twirl') dance('twirl', 5600);
+    else danceAcross(style === 'random' ? undefined : style, 7000);
+    const line = { ballet: 'ballet across the screen~ 🩰', salsa: '¡salsa! watch me go 💃', twirl: 'wheee, spinning! 🌀' }[style] || pick(LINES.breakDance);
     tell(line);
     return true;
   }
   if (/\b(joke|funny|make me laugh)\b/.test(t)) {
-    react('giggle'); tell(pick(JOKES));
+    // extra cute: giggle + wiggle + hearts
+    react('tickle'); beHappy(2400); floaters(4, ['♡', '♥', '✧'], '#FFB3C7');
+    tell(pick(JOKES));
     return true;
   }
   if (/\b(roll|barrel roll|tumble)\b/.test(t)) { react('roll'); return true; }

@@ -64,25 +64,17 @@
   </section>
 
   <section>
-    <h2>Talk to Puff</h2>
+    <h2>Talk to Puff <small>free</small></h2>
     <label class="row"><span>Chat brain</span>
       <select id="chat-provider">
-        <option value="auto">Auto — free local, else canned</option>
-        <option value="ollama">Local model (free) 🖥️</option>
-        <option value="canned">Cute canned replies (free)</option>
-        <option value="anthropic">Anthropic API (paid) ☁️</option>
+        <option value="auto">Smart (local model)</option>
+        <option value="canned">Simple (cute replies)</option>
       </select></label>
-    <p class="hint"><b>100% free:</b> install <b>Ollama</b> (ollama.com) and run <code>ollama pull llama3.2</code> — Puff then chats with a smart model on your Mac, private &amp; offline, no key, no cost. Without it, Puff uses cute built-in replies. (The paid Anthropic option is optional.)</p>
+    <p class="hint">Puff chats using a smart model running on your own Mac — private and offline. It's set up and ready. If it's ever off, Puff uses cute built-in replies.</p>
     <label class="row"><span>Local model</span>
-      <input type="text" id="chat-ollama" placeholder="e.g. llama3.2 (blank = auto)" autocomplete="off"></label>
-    <label class="row"><span>Anthropic key <small>(paid, optional)</small></span>
-      <input type="password" id="chat-key" placeholder="sk-ant-… (leave blank)" autocomplete="off"></label>
-    <label class="row"><span>Anthropic model</span>
-      <select id="chat-model">
-        <option value="claude-haiku-4-5">Haiku 4.5 — cheapest</option>
-        <option value="claude-sonnet-5">Sonnet 5 — balanced</option>
-        <option value="claude-opus-4-8">Opus 4.8 — smartest</option>
-      </select></label>
+      <input type="text" id="chat-ollama" placeholder="llama3.2 (blank = auto)" autocomplete="off"></label>
+    <input type="hidden" id="chat-key" value="">
+    <input type="hidden" id="chat-model" value="claude-opus-4-8">
   </section>
 
   <section>
