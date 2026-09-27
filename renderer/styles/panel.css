@@ -63,7 +63,10 @@ button.primary { background: var(--body); color: var(--ink); flex: 1; }
 button:hover { filter: brightness(1.12); }
 button:focus-visible, input:focus-visible { outline: 2px solid var(--lamp); outline-offset: 2px; }
 
-#tasks { list-style: none; margin: 12px 0 0; padding: 0; max-height: 108px; overflow-y: auto; }
+.tasks-head { margin: 12px 0 2px; font-size: 12px; font-weight: 800; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.tasks-head #taskCount { font-weight: 700; }
+#tasks { list-style: none; margin: 4px 0 0; padding: 0; max-height: 108px; overflow-y: auto; }
+#tasks .empty { color: var(--muted); font-size: 13px; padding: 4px 0; font-weight: 600; }
 #tasks li { display: flex; align-items: center; gap: 8px; padding: 4px 0; font-size: 14px; }
 #tasks li.done span { text-decoration: line-through; color: var(--muted); }
 #tasks li.dragging-task { opacity: .5; }

@@ -48,6 +48,20 @@ function moveTask(from, to) {
 
 export function render() {
   listEl.innerHTML = '';
+
+  // count + empty state so the to-do area is always visible
+  const countEl = document.getElementById('taskCount');
+  const total = S.data.tasks.length;
+  const doneN = S.data.tasks.filter((t) => t.done).length;
+  if (countEl) countEl.textContent = total ? `· ${doneN}/${total}` : '';
+  if (total === 0) {
+    const li = document.createElement('li');
+    li.className = 'empty';
+    li.textContent = 'no tasks yet — add one below ♡';
+    listEl.appendChild(li);
+    return;
+  }
+
   S.data.tasks.forEach((t, i) => {
     const li = document.createElement('li');
     if (t.done) li.className = 'done';
